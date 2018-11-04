@@ -70,8 +70,15 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.staticfiles',
     'piston',
     'app',
+)
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    "/Users/mbaechtold/Developer/github.com/mbaechtold/muspy/static",
 )
 
 LOGGING = {

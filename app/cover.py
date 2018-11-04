@@ -25,7 +25,7 @@ class Cover(object):
 
     def __init__(self, mbid, image=None):
         self._base = os.path.abspath(os.path.dirname(__file__) + '/..')
-        self._default = os.path.join(self._base, 'static/cover.jpg')
+        self._default = os.path.join(self._base, 'static', 'cover.jpg')
         self.found = False
         if len(mbid) != 36:
             self.found = True
