@@ -134,7 +134,7 @@ LOGGING = {
             'propagate': False,  # required to avoid double logging with root logger
         },
         'django.request': {
-            'handlers': ['console', 'mail_admins'],
+            'handlers': ['console'],
             'level': 'ERROR',
             'propagate': False,  # required to avoid double logging with root logger
         },
