@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Import{% endblock %}
 {% block header %}Import Artists{% endblock %}
 {% block content %}
@@ -30,7 +31,7 @@ artists
 {% endblock content %}
 
 {% block javascript %}
-<script type="text/javascript" src="{{ STATIC_URL }}/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" src="{% static 'jquery-1.6.4.min.js' %}"></script>
 <script type="text/javascript">
 //<![CDATA[
 $(function() {

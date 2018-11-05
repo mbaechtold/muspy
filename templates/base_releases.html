@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 {% if artist and user.is_authenticated and not user_has_artist %}
-<p><a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{{ STATIC_URL }}/add.gif" alt="+"/></a>
+<p><a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{% static 'add.gif' %}" alt="+"/></a>
 <a href="/artists-add?id={{ artist.mbid }}">Click to follow this artist</a></p>
 {% endif %}
 <table id="releases">
@@ -20,7 +21,7 @@
 {% if offset %}
 <meta name="robots" content="noindex"/>
 {% endif %}
-<script type="text/javascript" src="{{ STATIC_URL }}jquery-1.6.4.min.js"></script>
+<script type="text/javascript" src="{% static 'jquery-1.6.4.min.js' %}"></script>
 <script type="text/javascript">
 //<![CDATA[
 function star(img) {
