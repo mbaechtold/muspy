@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 
 ########################################################################
 # Change the next section in production
@@ -36,6 +37,8 @@ LASTFM_API_KEY='change me'
 ADMINS = (('admin', 'info@muspy.com'),)
 MANAGERS = ADMINS
 SEND_BROKEN_LINK_EMAILS = True
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DATABASES = {
     'default': {
@@ -80,9 +83,9 @@ SITE_ID = 1
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    "/Users/mbaechtold/Developer/github.com/mbaechtold/muspy/static",
-)
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 
 LOGGING = {
     'version': 1,
