@@ -100,7 +100,7 @@ class Artist(models.Model):
         LIMIT = 100
         release_groups = mb.get_release_groups(mbid, limit=LIMIT, offset=0)
         if release_groups:
-            with transaction.commit_on_success():
+            with transaction.atomic():
                 for rg_data in release_groups:
                     # Ignoring releases without a release date or a type.
                     if rg_data.get('first-release-date') and rg_data.get('type'):
@@ -138,7 +138,7 @@ class Job(models.Model):
 
     @classmethod
     def add_artists(cls, user, names):
-        with transaction.commit_on_success():
+        with transaction.atomic():
             for name in names:
                 cls(user=user, type=cls.ADD_ARTIST, data=name).save()
 
@@ -329,7 +329,7 @@ class UserArtist(models.Model):
 
     @classmethod
     def remove(cls, user, mbids):
-        with transaction.commit_on_success():
+        with transaction.atomic():
             for mbid in mbids:
                 q = cls.objects.filter(user=user)
                 q = q.filter(artist__mbid=mbid)
@@ -374,7 +374,7 @@ class UserProfile(models.Model):
 
     def purge(self):
         user = self.user
-        with transaction.commit_on_success():
+        with transaction.atomic():
             Job.objects.filter(user=user).delete()
             Notification.objects.filter(user=user).delete()
             Star.objects.filter(user=user).delete()
@@ -447,7 +447,7 @@ class UserProfile(models.Model):
         password = User.objects.make_random_password(length=16)
         profile.reset_code = ''
         profile.user.set_password(password)
-        with transaction.commit_on_success():
+        with transaction.atomic():
             profile.user.save()
             profile.save()
         return profile.user.email, password
@@ -485,7 +485,7 @@ class UserSearch(models.Model):
 
     @classmethod
     def remove(cls, user, searches):
-        with transaction.commit_on_success():
+        with transaction.atomic():
             for search in searches:
                 cls.objects.filter(user=user, search=search).delete()
 

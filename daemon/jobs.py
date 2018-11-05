@@ -107,7 +107,7 @@ def add_release_groups(mbid):
         logging.info('[JOB] Fetching release groups at offset %d' % offset)
         release_groups = mb.get_release_groups(mbid, limit=LIMIT, offset=offset)
         if release_groups:
-            with transaction.commit_on_success():
+            with transaction.atomic():
                 for rg_data in release_groups:
                     # Ignoring releases without a release date or a type.
                     if rg_data.get('first-release-date') and rg_data.get('type'):

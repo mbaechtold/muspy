@@ -60,7 +60,7 @@ class SettingsForm(forms.Form):
         if self.profile.user.email != self.cleaned_data['email']:
             self.profile.user.email = self.cleaned_data['email']
             self.profile.email_activated = False
-            with transaction.commit_on_success():
+            with transaction.atomic():
                 self.profile.user.save()
                 self.profile.save()
             self.profile.send_activation_email()

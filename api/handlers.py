@@ -295,7 +295,7 @@ class UserHandler(BaseHandler):
         if 'notify_other' in request.POST:
             profile.notify_other = request.POST['notify_other'] in ['1', 'true']
 
-        with transaction.commit_on_success():
+        with transaction.atomic():
             user.save()
             profile.save()
 

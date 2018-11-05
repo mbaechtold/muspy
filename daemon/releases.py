@@ -120,7 +120,7 @@ def check():
                 logging.warning('Could not fetch release groups, retrying')
                 continue
             logging.info('Fetched %s release groups' % len(release_groups))
-            with transaction.commit_on_success():
+            with transaction.atomic():
                 for rg_data in release_groups:
                     mbid = rg_data['id']
                     # Ignore releases without a release date or a type.
@@ -184,7 +184,7 @@ def check():
             if len(release_groups) < LIMIT: break
             offset += LIMIT
 
-        with transaction.commit_on_success():
+        with transaction.atomic():
             for mbid in current:
                 release_group = current[mbid]
                 if not release_group.is_deleted:

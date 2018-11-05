@@ -35,7 +35,7 @@ def send():
         except IndexError:
             break # last one
 
-        with transaction.commit_on_success():
+        with transaction.atomic():
             user = notification.user
             profile = user.profile
             if profile.notify and profile.email_activated:
