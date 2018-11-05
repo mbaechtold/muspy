@@ -16,7 +16,7 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.contrib.auth.backends import ModelBackend
-from django.contrib.admin.models import User
+from django.contrib.auth.models import User
 
 from app.tools import check_password
 
