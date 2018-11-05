@@ -56,7 +56,7 @@ EMAIL_SUBJECT_PREFIX = '[muspy] '
 TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
 TEMPLATE_DIRS = ('templates',)
 AUTHENTICATION_BACKENDS = ('app.backends.EmailAuthBackend',)
-
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
