@@ -239,7 +239,7 @@ class AnonymousUserHandler(AnonymousBaseHandler):
         user = UserProfile.create_user(email, password)
 
         if activate:
-            user.get_profile().send_activation_email()
+            user.profile.send_activation_email()
 
         return rc.CREATED
 
@@ -253,7 +253,7 @@ class UserHandler(BaseHandler):
             return rc.BAD_REQUEST
 
         user = request.user
-        profile = user.get_profile()
+        profile = user.profile
 
         return {
             'userid': user.username,
@@ -273,7 +273,7 @@ class UserHandler(BaseHandler):
             return rc.FORBIDDEN
 
         user = request.user
-        profile = user.get_profile()
+        profile = user.profile
 
         if 'email' in request.POST:
             user.email = request.POST['email'].lower().strip()
@@ -318,5 +318,5 @@ class UserHandler(BaseHandler):
         if request.user.username != userid:
             return rc.FORBIDDEN
 
-        request.user.get_profile().purge()
+        request.user.profile.purge()
         return rc.DELETED

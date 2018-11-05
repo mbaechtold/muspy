@@ -48,11 +48,11 @@ def activate(request):
         messages.error(request, 'You need to sign in to activate your email address.')
         return redirect('/')
 
-    if request.user.get_profile().email_activated:
+    if request.user.profile.email_activated:
         messages.info(request, 'Your email address is already active.')
         return redirect('/')
 
-    request.user.get_profile().send_activation_email()
+    request.user.profile.send_activation_email()
     return render(request, 'activate.html')
 
 def artist(request, mbid):
@@ -234,7 +234,7 @@ def cover(request):
 @login_required
 def delete(request):
     if request.POST.get('confirm', '') == '1':
-        profile = request.user.get_profile()
+        profile = request.user.profile
         logout(request)
         profile.purge()
         return redirect('/')
@@ -405,7 +405,7 @@ def reset(request):
 def settings(request):
     if request.method == 'POST':
         form = SettingsForm(request.POST)
-        form.profile = request.user.get_profile()
+        form.profile = request.user.profile
         if form.is_valid():
             form.save()
             messages.success(request, 'Your settings have been saved.')
@@ -413,14 +413,14 @@ def settings(request):
     else:
         initial = {
             'email': request.user.email,
-            'notify': request.user.get_profile().notify,
-            'notify_album': request.user.get_profile().notify_album,
-            'notify_single': request.user.get_profile().notify_single,
-            'notify_ep': request.user.get_profile().notify_ep,
-            'notify_live': request.user.get_profile().notify_live,
-            'notify_compilation': request.user.get_profile().notify_compilation,
-            'notify_remix': request.user.get_profile().notify_remix,
-            'notify_other': request.user.get_profile().notify_other,
+            'notify': request.user.profile.notify,
+            'notify_album': request.user.profile.notify_album,
+            'notify_single': request.user.profile.notify_single,
+            'notify_ep': request.user.profile.notify_ep,
+            'notify_live': request.user.profile.notify_live,
+            'notify_compilation': request.user.profile.notify_compilation,
+            'notify_remix': request.user.profile.notify_remix,
+            'notify_other': request.user.profile.notify_other,
         }
         form = SettingsForm(initial=initial)
 
@@ -433,7 +433,7 @@ def signup(request):
         user = authenticate(
             username=form.cleaned_data['email'],
             password=form.cleaned_data['password'])
-        user.get_profile().send_activation_email()
+        user.profile.send_activation_email()
         login(request, user)
         return redirect(LOGIN_REDIRECT_URL)
 

@@ -250,7 +250,7 @@ LIMIT %s OFFSET %s
             params.append(user.id)
             order = '"app_star"."user_id" DESC, ' + order
             # Release types.
-            profile = user.get_profile()
+            profile = user.profile
             types = profile.get_types()
             ss = ','.join('%s' for i in xrange(len(types)))
             where += '\nAND "app_releasegroup"."type" IN (' + ss + ')'
@@ -340,7 +340,7 @@ class UserProfile(models.Model):
 
     code_length = 16
 
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name='profile')
 
     notify = models.BooleanField(default=True)
     notify_album = models.BooleanField(default=True)
@@ -455,7 +455,7 @@ class UserProfile(models.Model):
     @classmethod
     def get_by_email(cls, email):
         users = User.objects.filter(email=email.lower())
-        return users[0].get_profile() if users else None
+        return users[0].profile if users else None
 
     @classmethod
     def get_by_legacy_id(cls, legacy_id):
@@ -465,7 +465,7 @@ class UserProfile(models.Model):
     @classmethod
     def get_by_username(cls, username):
         users = User.objects.filter(username=username)
-        return users[0].get_profile() if users else None
+        return users[0].profile if users else None
 
     @classmethod
     def create_user(cls, email, password):

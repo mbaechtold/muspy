@@ -37,13 +37,13 @@ def send():
 
         with transaction.commit_on_success():
             user = notification.user
-            profile = user.get_profile()
+            profile = user.profile
             if profile.notify and profile.email_activated:
                 types = profile.get_types()
                 rg = notification.release_group
                 if rg.type in types and is_recent(rg.date):
                     sleep = True
-                    result = user.get_profile().send_email(
+                    result = user.profile.send_email(
                         subject='[muspy] New Release: %s - %s' % (rg.artist.name, rg.name),
                         text_template='email/release.txt',
                         html_template='email/release.html',
