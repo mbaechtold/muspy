@@ -22,7 +22,6 @@ import os
 ########################################################################
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 SECRET_KEY = 'change me'
 
@@ -56,8 +55,16 @@ AUTH_PROFILE_MODULE = 'app.UserProfile'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 ROOT_URLCONF = 'urls'
 EMAIL_SUBJECT_PREFIX = '[muspy] '
-TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
-TEMPLATE_DIRS = ('templates',)
+TEMPLATES = [
+    {
+        "APP_DIRS": True,
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "OPTIONS": {
+            "debug": DEBUG,
+        }
+    }
+]
 AUTHENTICATION_BACKENDS = ('app.backends.EmailAuthBackend',)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MIDDLEWARE_CLASSES = (
