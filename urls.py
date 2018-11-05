@@ -15,43 +15,46 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.conf.urls.defaults import *
+from django.conf.urls import url
 from django.contrib.auth.views import login
 from django.views.generic.base import RedirectView, TemplateView
 
+from app import views
 from app.forms import SignInForm
 
+urlpatterns = [
+    url(r'^$', views.index),
+    url(r'^activate$', views.activate),
+    url(r'^about$', TemplateView.as_view(template_name='about.html')),
+    url(r'^artist/([0-9a-f\-]+)$', views.artist),
+    url(r'^artists$', views.artists),
+    url(r'^artists-add$', views.artists_add),
+    url(r'^artists-remove$', views.artists_remove),
+    url(r'^blog$', RedirectView.as_view(url='http://kojevnikov.com/tag/muspy.html')),
+    url(r'^blog/feed$', RedirectView.as_view(url='http://kojevnikov.com/muspy.xml')),
+    url(r'^contact$', TemplateView.as_view(template_name='contact.html')),
+    url(r'^cover$', views.cover),
+    url(r'^delete$', views.delete),
+    url(r'^faq$', TemplateView.as_view(template_name='faq.html')),
+    url(r'^feed$', views.feed),
+    url(r'^feed/(?P<id>\d+)$', RedirectView.as_view(url='/feed?id=%(id)s')),
+    url(r'^ical$', views.ical),
+    url(r'^import$', views.import_artists),
+    url(r'^releases$', views.releases),
+    url(r'^reset$', views.reset),
+    url(r'^settings$', views.settings),
+    url(r'^signin$', login, {'authentication_form': SignInForm, 'template_name': 'signin.html'}),
+    url(r'^signout$', views.signout),
+    url(r'^signup$', views.signup),
+    url(r'^sitemap.xml$', views.sitemap),
+    url(r'^star$', views.star),
+    url(r'^unsubscribe$', views.unsubscribe),
+    url(r'blog|\.php', views.forbidden), # Hello, vulnerability scan bots!
+]
 
-urlpatterns = patterns('app.views',
-    (r'^$', 'index'),
-    (r'^activate$', 'activate'),
-    (r'^about$', TemplateView.as_view(template_name='about.html')),
-    (r'^artist/([0-9a-f\-]+)$', 'artist'),
-    (r'^artists$', 'artists'),
-    (r'^artists-add$', 'artists_add'),
-    (r'^artists-remove$', 'artists_remove'),
-    (r'^blog$', RedirectView.as_view(url='http://kojevnikov.com/tag/muspy.html')),
-    (r'^blog/feed$', RedirectView.as_view(url='http://kojevnikov.com/muspy.xml')),
-    (r'^contact$', TemplateView.as_view(template_name='contact.html')),
-    (r'^cover$', 'cover'),
-    (r'^delete$', 'delete'),
-    (r'^faq$', TemplateView.as_view(template_name='faq.html')),
-    (r'^feed$', 'feed'),
-    (r'^feed/(?P<id>\d+)$', RedirectView.as_view(url='/feed?id=%(id)s')),
-    (r'^ical$', 'ical'),
-    (r'^import$', 'import_artists'),
-    (r'^releases$', 'releases'),
-    (r'^reset$', 'reset'),
-    (r'^settings$', 'settings'),
-    (r'^signin$', login, {'authentication_form': SignInForm, 'template_name': 'signin.html'}),
-    (r'^signout$', 'signout'),
-    (r'^signup$', 'signup'),
-    (r'^sitemap.xml$', 'sitemap'),
-    (r'^star$', 'star'),
-    (r'^unsubscribe$', 'unsubscribe'),
-    (r'blog|\.php', 'forbidden'), # Hello, vulnerability scan bots!
-)
 
-urlpatterns += patterns('',
-    (r'^api/1/', include('api.urls')),
-)
+# "django-piston" relies on "django.utils.simplejson", which has been removed in Django 1.5.
+# Since it's no longer maintained, the API will have to be rewritten entirely.
+# urlpatterns += patterns('',
+#     (r'^api/1/', include('api.urls')),
+# )
