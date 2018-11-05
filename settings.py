@@ -71,9 +71,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'piston',
     'app',
 )
+
+SITE_ID = 1
 
 STATIC_URL = '/static/'
 
