@@ -97,9 +97,9 @@ def artists(request):
     artist_rows = arrange_for_table(artists, COLUMNS)
 
     # Using REQUEST because this handler can be called using both GET and POST.
-    search = request.REQUEST.get('search', '')
-    dontadd = request.REQUEST.get('dontadd', '')
-    offset = request.REQUEST.get('offset', '')
+    search = request.POST.get('search', '')
+    dontadd = request.POST.get('dontadd', '')
+    offset = request.POST.get('offset', '')
     offset = int(offset) if offset.isdigit() else 0
 
     found_artists, count = [], 0
@@ -450,8 +450,8 @@ def sitemap(request):
 
 @login_required
 def star(request):
-    id = request.REQUEST.get('id', '').lower()
-    value = int(request.REQUEST.get('value', 0))
+    id = request.POST.get('id', '').lower()
+    value = int(request.POST.get('value', 0))
     Star.set(request.user, id, value)
     if request.method == 'POST':
         return HttpResponse('{}', 'application/json')
