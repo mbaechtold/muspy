@@ -67,7 +67,7 @@ TEMPLATES = [
 ]
 AUTHENTICATION_BACKENDS = ('app.backends.EmailAuthBackend',)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
