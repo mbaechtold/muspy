@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+django-webtest = "*"
+pytest-django = "*"
 
 [packages]
 django-piston = "==0.2.3"
