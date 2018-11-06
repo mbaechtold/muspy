@@ -62,6 +62,13 @@ TEMPLATES = [
         "DIRS": [os.path.join(BASE_DIR, "templates")],
         "OPTIONS": {
             "debug": DEBUG,
+            "context_processors": [
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.csrf',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+            ]
         }
     }
 ]
