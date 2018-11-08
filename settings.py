@@ -20,6 +20,7 @@ import os
 from configurations import Configuration
 from configurations import values
 import dj_database_url
+import dj_email_url
 
 
 class Base(Configuration):
@@ -33,8 +34,17 @@ class Base(Configuration):
     SECRET_KEY = values.Value("change me")
 
     SERVER_EMAIL = 'info@muspy.com'
-    EMAIL_HOST = 'localhost'
-    EMAIL_PORT = 1025
+
+    email_config = dj_email_url.config(default='smtp://localhost:1025')
+
+    EMAIL_FILE_PATH = email_config['EMAIL_FILE_PATH']
+    EMAIL_HOST_USER = email_config['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = email_config['EMAIL_HOST_PASSWORD']
+    EMAIL_HOST = email_config['EMAIL_HOST']
+    EMAIL_PORT = email_config['EMAIL_PORT']
+    EMAIL_BACKEND = email_config['EMAIL_BACKEND']
+    EMAIL_USE_TLS = email_config['EMAIL_USE_TLS']
+    EMAIL_USE_SSL = email_config['EMAIL_USE_SSL']
 
     LASTFM_API_KEY = values.Value("change me", environ_prefix="")
 
@@ -76,7 +86,6 @@ class Base(Configuration):
         }
     ]
     AUTHENTICATION_BACKENDS = ('app.backends.EmailAuthBackend',)
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     MIDDLEWARE = (
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
