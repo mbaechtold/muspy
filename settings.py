@@ -86,15 +86,15 @@ class Base(Configuration):
         }
     ]
     AUTHENTICATION_BACKENDS = ('app.backends.EmailAuthBackend',)
-    MIDDLEWARE = (
+    MIDDLEWARE = [
         'django.middleware.common.CommonMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'django.middleware.csrf.CsrfViewMiddleware',
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
-    )
+    ]
 
-    INSTALLED_APPS = (
+    INSTALLED_APPS = [
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
@@ -106,7 +106,7 @@ class Base(Configuration):
         'storages',
         'piston',
         'app',
-    )
+    ]
 
     SITE_ID = 1
 
@@ -165,7 +165,71 @@ class Base(Configuration):
     }
 
 
-class Production(Base):
+class SentryMixin(object):
+    @property
+    def INSTALLED_APPS(self):
+        return super(SentryMixin, self).INSTALLED_APPS + ["raven.contrib.django.raven_compat"]
+
+    @property
+    def MIDDLEWARE(self):
+        return super(SentryMixin, self).MIDDLEWARE + [
+            "raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware"
+        ]
+
+    # SENTRY_CLIENT = 'raven.contrib.django.raven_compat.DjangoClient'
+
+    SENTRY_DSN = values.Value("", environ_prefix="")
+
+    @property
+    def RAVEN_CONFIG(self):
+        if not self.SENTRY_DSN:
+            return {}
+        return {
+            "dsn": self.SENTRY_DSN,
+            # If you are using git, you can also automatically configure the
+            # release based on the git info.
+            # TODO: Does not work on Heroku, see https://github.com/getsentry/raven-python/issues/855
+            # So probably does not work on Dokku neither.
+            # "release": raven.fetch_git_sha(str(super(SentryMixin, self).PROJECT_PATH)),
+        }
+
+    LOGGING = {
+            "version": 1,
+            "disable_existing_loggers": True,
+            "formatters": {
+                "verbose": {
+                    "format": "%(levelname)s %(asctime)s %(module)s "
+                              "%(process)d %(thread)d %(message)s"
+                }
+            },
+            "handlers": {
+                "sentry": {
+                    "level": "WARNING",  # To capture more than ERROR, change to WARNING, INFO, etc.
+                    "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
+                    "tags": {"custom-tag": "prod"},
+                },
+                "console": {
+                    "level": "DEBUG",
+                    "class": "logging.StreamHandler",
+                    "formatter": "verbose",
+                },
+            },
+            "loggers": {
+                "root": {"level": "WARNING", "handlers": ["sentry"]},
+                "django.db.backends": {
+                    "level": "ERROR",
+                    "handlers": ["sentry"],
+                    "propagate": False,
+                },
+                "django": {"level": "ERROR", "handlers": ["sentry"], "propagate": False},
+                "django.request": {"level": "ERROR", "handlers": ["sentry"], "propagate": True},
+                "raven": {"level": "DEBUG", "handlers": ["sentry"], "propagate": False},
+                "sentry.errors": {"level": "DEBUG", "handlers": ["sentry"], "propagate": False},
+            },
+        }
+
+
+class Production(SentryMixin, Base):
 
     DEBUG = False
 
@@ -193,3 +257,4 @@ class Production(Base):
 
     STATIC_URL = "https://%s/%s/" % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
     STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
