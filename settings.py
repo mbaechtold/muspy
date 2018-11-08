@@ -162,3 +162,10 @@ class Base(Configuration):
             },
         },
     }
+
+
+class Production(Base):
+
+    DEBUG = False
+
+    SECRET_KEY = values.Value(environ_required=True)
