@@ -27,3 +27,11 @@ Go to the project directory and run `make db` to create an empty database.
 
 Type `make run` and go to <http://muspy.dev/>. If static files don't load make
 sure nginx has rx permissions for the `muspy/static` directory.
+
+### Testing
+
+You may run the test suite with `pytest`. If you need to set a debugger inside a test, you need to 
+run `pytest -s`.
+
+Coverage report can be shown with `pytest --cov`. A HTML report can be generated with 
+`pytest --cov --cov-report=html`.

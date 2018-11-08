@@ -6,6 +6,8 @@ name = "pypi"
 [dev-packages]
 django-webtest = "*"
 pytest-django = "*"
+pytest-cov = "*"
+pytest-env = "*"
 
 [packages]
 django-piston = "==0.2.3"

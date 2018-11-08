@@ -4,3 +4,4 @@ db/muspy.bak
 db/muspy.db*
 .env
 env
+.coveragerc
