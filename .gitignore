@@ -5,3 +5,4 @@ db/muspy.db*
 .env
 env
 .coveragerc
+/static/

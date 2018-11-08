@@ -100,10 +100,7 @@ class Base(Configuration):
     SITE_ID = 1
 
     STATIC_URL = '/static/'
-
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, "static"),
-    ]
+    STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
     PASSWORD_HASHERS = [
         'django.contrib.auth.hashers.PBKDF2PasswordHasher',
