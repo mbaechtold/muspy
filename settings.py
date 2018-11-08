@@ -47,7 +47,7 @@ class Base(Configuration):
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     DATABASES = {
-        'default': dj_database_url.parse('sqlite:///db/muspy.db')
+        'default': dj_database_url.config(default='sqlite:///db/muspy.db')
     }
 
     TIME_ZONE = None
