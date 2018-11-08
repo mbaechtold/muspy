@@ -30,7 +30,7 @@ class Base(Configuration):
 
     DEBUG = True
 
-    SECRET_KEY = 'change me'
+    SECRET_KEY = values.Value("change me")
 
     SERVER_EMAIL = 'info@muspy.com'
     EMAIL_HOST = 'localhost'
@@ -93,6 +93,7 @@ class Base(Configuration):
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'django.contrib.sites',
+        'django_extensions',
         'piston',
         'app',
     )
