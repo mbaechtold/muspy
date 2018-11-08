@@ -6,9 +6,9 @@ import envdir
 
 if __name__ == "__main__":
 
-    # Read environment variables from the files in the directory "./.env/".
+    # Read environment variables from the files in the directory "./.env_vars/".
     current_folder = os.path.dirname(os.path.abspath(__file__))
-    envdir_folder = os.path.join(current_folder, ".env")
+    envdir_folder = os.path.join(current_folder, ".env_vars")
     if os.path.exists(envdir_folder):
         envdir.open(envdir_folder)
 
