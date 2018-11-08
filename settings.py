@@ -18,6 +18,7 @@
 import os
 
 from configurations import Configuration
+from configurations import values
 import dj_database_url
 
 
@@ -35,7 +36,7 @@ class Base(Configuration):
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 1025
 
-    LASTFM_API_KEY='change me'
+    LASTFM_API_KEY = values.Value("change me", environ_prefix="")
 
     ########################################################################
 
