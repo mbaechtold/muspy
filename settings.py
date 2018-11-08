@@ -17,6 +17,8 @@
 
 import os
 
+import dj_database_url
+
 ########################################################################
 # Change the next section in production
 ########################################################################
@@ -40,11 +42,7 @@ SEND_BROKEN_LINK_EMAILS = True
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db/muspy.db',
-        'OPTIONS': { 'timeout': 20 },
-    }
+    'default': dj_database_url.parse('sqlite:///db/muspy.db')
 }
 
 TIME_ZONE = None
