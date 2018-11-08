@@ -169,3 +169,12 @@ class Production(Base):
     DEBUG = False
 
     SECRET_KEY = values.Value(environ_required=True)
+
+    ALLOWED_HOSTS = [
+        "muspy.baechtold.me",
+        "www.muspy.baechtold.me",
+        "muspy.one.baechtold.me",
+        "www.muspy.one.baechtold.me",
+        "muspy.com",
+        "www.muspy.com",
+    ]
