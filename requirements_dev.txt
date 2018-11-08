@@ -4,13 +4,16 @@ attrs==18.2.0
 beautifulsoup4==4.6.3
 coverage==4.5.1
 django-webtest==1.9.4
+funcsigs==1.0.2 ; python_version < '3.0'
 more-itertools==4.3.0
+pathlib2==2.3.2 ; python_version < '3.6'
 pluggy==0.8.0
 py==1.7.0
 pytest-cov==2.6.0
 pytest-django==3.4.3
 pytest-env==0.6.2
 pytest==3.10.0
+scandir==1.9.0 ; python_version < '3.5'
 six==1.11.0
 waitress==1.1.0
 webob==1.8.3
