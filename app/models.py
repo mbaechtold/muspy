@@ -454,8 +454,14 @@ class UserProfile(models.Model):
 
     @classmethod
     def get_by_email(cls, email):
+        # TODO: The email addresses should be unique per user, so there can only be one user. Use "get()" instead of "filter()".
         users = User.objects.filter(email=email.lower())
-        return users[0].profile if users else None
+        if not users:
+            return None
+        try:
+            return users[0].profile
+        except UserProfile.DoesNotExist:
+            return None
 
     @classmethod
     def get_by_legacy_id(cls, legacy_id):

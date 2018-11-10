@@ -379,6 +379,7 @@ def reset(request):
             email = form.cleaned_data['email']
             profile = UserProfile.get_by_email(email)
             if not profile:
+                # TODO: Remove. This will never happen because the form validation already checked for user profile and raise a validation error.
                 messages.error(request, 'Unknown email address: ' + email)
                 return redirect('/')
             profile.send_reset_email()
