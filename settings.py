@@ -91,7 +91,7 @@ class Base(Configuration):
 
     SECRET_KEY = values.Value("change me")
 
-    SERVER_EMAIL = 'info@muspy.com'
+    SERVER_EMAIL = 'info@localhost'
 
     email_config = dj_email_url.config(default='smtp://localhost:1025')
 
@@ -108,7 +108,7 @@ class Base(Configuration):
 
     ########################################################################
 
-    ADMINS = (('admin', 'info@muspy.com'),)
+    ADMINS = (('admin', 'info@localhost'),)
     MANAGERS = ADMINS
     SEND_BROKEN_LINK_EMAILS = True
 
@@ -235,6 +235,12 @@ class Base(Configuration):
 class Production(SentryMixin, Base):
 
     DEBUG = False
+
+    ADMINS = (
+        ("admin", "muspy@baechtold.me"),
+    )
+
+    SERVER_EMAIL = "muspy@baechtold.me"
 
     SECRET_KEY = values.Value(environ_required=True)
 
