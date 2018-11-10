@@ -4,5 +4,5 @@ db/muspy.bak
 db/muspy.db*
 .env_vars/
 env
-.coveragerc
+.coverage
 /static/
