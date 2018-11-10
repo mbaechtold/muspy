@@ -448,12 +448,12 @@ def sitemap(request):
 
 @login_required
 def star(request):
-    id = request.POST.get('id', '').lower()
+    if request.method != 'POST':
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+    id = request.POST.get('id', 0).lower()
     value = int(request.POST.get('value', 0))
     Star.set(request.user, id, value)
-    if request.method == 'POST':
-        return HttpResponse('{}', 'application/json')
-    return redirect(request.META.get('HTTP_REFERER', '/'))
+    return HttpResponse('{}', 'application/json')
 
 def unsubscribe(request):
     username = request.GET.get('id', '')
