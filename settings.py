@@ -23,6 +23,64 @@ import dj_database_url
 import dj_email_url
 
 
+class SentryMixin(object):
+    SENTRY_DSN = values.Value("", environ_prefix="")
+
+    @property
+    def INSTALLED_APPS(self):
+        installed_apps = super(SentryMixin, self).INSTALLED_APPS
+        if not self.SENTRY_DSN:
+            return installed_apps
+        return installed_apps + ["raven.contrib.django.raven_compat"]
+
+    @property
+    def MIDDLEWARE(self):
+        middleware = super(SentryMixin, self).MIDDLEWARE
+        if not self.SENTRY_DSN:
+            return middleware
+        return middleware + [
+            "raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware"
+        ]
+
+    @property
+    def RAVEN_CONFIG(self):
+        if not self.SENTRY_DSN:
+            return {}
+        return {
+            "dsn": self.SENTRY_DSN,
+            # If you are using git, you can also automatically configure the
+            # release based on the git info.
+            # TODO: Does not work on Heroku, see https://github.com/getsentry/raven-python/issues/855
+            # So probably does not work on Dokku neither.
+            # "release": raven.fetch_git_sha(str(super(SentryMixin, self).PROJECT_PATH)),
+        }
+
+    @property
+    def LOGGING(self):
+        logging = super(SentryMixin, self).LOGGING
+        if not self.SENTRY_DSN:
+            return logging
+
+        # fmt: off
+        logging["handlers"]["sentry"] = {
+            "level": "DEBUG",
+            "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
+        }
+        logging["loggers"]["raven"] = {
+            "level": "ERROR",
+            "handlers": ["sentry"],
+            "propagate": False,
+        }
+        logging["loggers"]["sentry.errors"] = {
+            "level": "ERROR",
+            "handlers": ["sentry"],
+            "propagate": False,
+        }
+        # fmt: on
+
+        return logging
+
+
 class Base(Configuration):
 
     ########################################################################
@@ -119,114 +177,59 @@ class Base(Configuration):
         'django.contrib.auth.hashers.SHA1PasswordHasher',
     ]
 
+    # fmt: off
     LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "%(asctime)s %(levelname)s %(name)s %(module)s %(process)d %(thread)d --> %(message)s",
             },
-            'simple': {
-                'format': '%(levelname)s %(message)s'
+            "simple": {
+                "format": "%(levelname)s %(message)s",
             },
         },
-        'handlers': {
-            'console': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'formatter': 'verbose'
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "formatter": "verbose",
             },
-            'mail_admins': {
-                'level': 'ERROR',
-                'class': 'django.utils.log.AdminEmailHandler'
-            }
+            "mail_admins": {
+                "level": "ERROR",
+                "class": "django.utils.log.AdminEmailHandler",
+                "formatter": "verbose",
+            },
+            "file": {
+                "level": "DEBUG",
+                "class": "logging.handlers.WatchedFileHandler",
+                "formatter": "verbose",
+                "filename": os.path.join(BASE_DIR, "logs/django.log"),
+            },
         },
-        'loggers': {
-            '': {
-                'handlers': ['console'],
-                'level': 'WARNING',
+        "loggers": {
+            "": {
+                "handlers": ["console"],
+                "level": "DEBUG",
             },
-            'django.db': {
-                'handlers': ['console'],
-                'level': 'ERROR',
-                'propagate': False,  # required to avoid double logging with root logger
+            "django.db": {
+                "handlers": ["console", "file"],
+                "level": "WARNING",
+                "propagate": False,  # required to avoid double logging with root logger
             },
-            'django.request': {
-                'handlers': ['console'],
-                'level': 'ERROR',
-                'propagate': False,  # required to avoid double logging with root logger
+            "django.request": {
+                "handlers": ["console", "file"],
+                "level": "WARNING",
+                "propagate": False,  # required to avoid double logging with root logger
             },
-            'app': {
-                'handlers': ['console'],
-                'level': 'DEBUG',
-                'propagate': False,  # required to avoid double logging with root logger
+            "app": {
+                "handlers": ["console", "file"],
+                "level": "DEBUG",
+                "propagate": False,  # required to avoid double logging with root logger
             },
         },
     }
-
-
-class SentryMixin(object):
-    @property
-    def INSTALLED_APPS(self):
-        return super(SentryMixin, self).INSTALLED_APPS + ["raven.contrib.django.raven_compat"]
-
-    @property
-    def MIDDLEWARE(self):
-        return super(SentryMixin, self).MIDDLEWARE + [
-            "raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware"
-        ]
-
-    # SENTRY_CLIENT = 'raven.contrib.django.raven_compat.DjangoClient'
-
-    SENTRY_DSN = values.Value("", environ_prefix="")
-
-    @property
-    def RAVEN_CONFIG(self):
-        if not self.SENTRY_DSN:
-            return {}
-        return {
-            "dsn": self.SENTRY_DSN,
-            # If you are using git, you can also automatically configure the
-            # release based on the git info.
-            # TODO: Does not work on Heroku, see https://github.com/getsentry/raven-python/issues/855
-            # So probably does not work on Dokku neither.
-            # "release": raven.fetch_git_sha(str(super(SentryMixin, self).PROJECT_PATH)),
-        }
-
-    LOGGING = {
-            "version": 1,
-            "disable_existing_loggers": True,
-            "formatters": {
-                "verbose": {
-                    "format": "%(levelname)s %(asctime)s %(module)s "
-                              "%(process)d %(thread)d %(message)s"
-                }
-            },
-            "handlers": {
-                "sentry": {
-                    "level": "WARNING",  # To capture more than ERROR, change to WARNING, INFO, etc.
-                    "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-                    "tags": {"custom-tag": "prod"},
-                },
-                "console": {
-                    "level": "DEBUG",
-                    "class": "logging.StreamHandler",
-                    "formatter": "verbose",
-                },
-            },
-            "loggers": {
-                "root": {"level": "WARNING", "handlers": ["sentry"]},
-                "django.db.backends": {
-                    "level": "ERROR",
-                    "handlers": ["sentry"],
-                    "propagate": False,
-                },
-                "django": {"level": "ERROR", "handlers": ["sentry"], "propagate": False},
-                "django.request": {"level": "ERROR", "handlers": ["sentry"], "propagate": True},
-                "raven": {"level": "DEBUG", "handlers": ["sentry"], "propagate": False},
-                "sentry.errors": {"level": "DEBUG", "handlers": ["sentry"], "propagate": False},
-            },
-        }
+    # fmt: on
 
 
 class Production(SentryMixin, Base):
@@ -248,7 +251,7 @@ class Production(SentryMixin, Base):
     AWS_LOCATION = values.Value("your-spaces-files-folder", environ_prefix="")
     AWS_SECRET_ACCESS_KEY = values.Value("your-spaces-secret-access-key", environ_prefix="")
     AWS_STORAGE_BUCKET_NAME = values.Value("your-storage-bucket-name", environ_prefix="")
-    
+
     AWS_S3_ENDPOINT_URL = values.Value("https://ams3.digitaloceanspaces.com", environ_prefix="")
     AWS_S3_REGION_NAME = values.Value("ams3", environ_prefix="")
     AWS_S3_OBJECT_PARAMETERS = {
@@ -258,3 +261,33 @@ class Production(SentryMixin, Base):
     STATIC_URL = "https://%s/%s/" % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
     STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
+    @property
+    def LOGGING(self):
+        logging = super(Production, self).LOGGING
+        if not self.SENTRY_DSN:
+            return logging
+
+        # fmt: off
+        logging["loggers"] = {
+            "": {
+                "handlers": ["sentry"],
+                "level": "ERROR",
+            },
+            "django.db": {
+                "handlers": ["sentry"],
+                "level": "WARNING",
+                "propagate": False,  # required to avoid double logging with root logger
+            },
+            "django.request": {
+                "handlers": ["sentry"],
+                "level": "WARNING",
+                "propagate": False,  # required to avoid double logging with root logger
+            },
+            "app": {
+                "handlers": ["sentry"],
+                "level": "WARNING",
+                "propagate": False,  # required to avoid double logging with root logger
+            },
+        }
+        # fmt: on
+        return logging
