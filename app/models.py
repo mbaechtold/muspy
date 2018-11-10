@@ -454,7 +454,7 @@ class UserProfile(models.Model):
 
     @classmethod
     def get_by_email(cls, email):
-        # TODO: The email addresses should be unique per user, so there can only be one user. Use "get()" instead of "filter()".
+        # We can have multiple users having the same email address.
         users = User.objects.filter(email=email.lower())
         if not users:
             return None
@@ -470,8 +470,14 @@ class UserProfile(models.Model):
 
     @classmethod
     def get_by_username(cls, username):
+        # TODO: The usernames should be unique, so there can only be one user. Use "get()" instead of "filter()".
         users = User.objects.filter(username=username)
-        return users[0].profile if users else None
+        if not users:
+            return None
+        try:
+            return users[0].profile
+        except UserProfile.DoesNotExist:
+            return None
 
     @classmethod
     def create_user(cls, email, password):
