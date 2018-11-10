@@ -16,7 +16,7 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls import url
-from django.contrib.auth.views import login
+from django.contrib.auth.views import LoginView
 from django.views.generic.base import RedirectView, TemplateView
 
 from app import views
@@ -43,7 +43,7 @@ urlpatterns = [
     url(r'^releases$', views.releases),
     url(r'^reset$', views.reset),
     url(r'^settings$', views.settings),
-    url(r'^signin$', login, {'authentication_form': SignInForm, 'template_name': 'signin.html'}),
+    url(r'^signin$', LoginView.as_view(authentication_form=SignInForm, template_name="signin.html")),
     url(r'^signout$', views.signout),
     url(r'^signup$', views.signup),
     url(r'^sitemap.xml$', views.sitemap),
