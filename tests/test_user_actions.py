@@ -15,10 +15,10 @@ class TestUserAction(WebTest):
         assert response.context["user"].is_anonymous == True
 
         sign_in_link = response.html.find(lambda tag: tag.name == "a" and "Sign in" in tag.text)
-        assert sign_in_link["href"] == u"/signin"
+        assert sign_in_link["href"] == "/signin"
 
         sign_up_link = response.html.find(lambda tag: tag.name == "a" and "Sign up" in tag.text)
-        assert sign_up_link["href"] == u"/signup"
+        assert sign_up_link["href"] == "/signup"
 
     def test_user_actions_authenticated(self):
         """
@@ -30,7 +30,7 @@ class TestUserAction(WebTest):
         assert response.context["user"].username == "john.doe"
 
         settings_link = response.html.find(lambda tag: tag.name == "a" and "Settings" in tag.text)
-        assert settings_link["href"] == u"/settings"
+        assert settings_link["href"] == "/settings"
 
         sign_out_link = response.html.find(lambda tag: tag.name == "a" and "Sign out" in tag.text)
-        assert sign_out_link["href"] == u"/signout"
+        assert sign_out_link["href"] == "/signout"

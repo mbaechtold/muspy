@@ -33,7 +33,7 @@ class TestArtistsAdd(WebTest):
         assert response.status == "200 OK"
 
         self.assertEqual(
-            u"The artist is special-purpose and cannot be added",
+            "The artist is special-purpose and cannot be added",
             response.html.find("div", "message error").text.strip(),
         )
         assert User.objects.get(username="john.doe").userartist_set.count() == 0
@@ -54,7 +54,7 @@ class TestArtistsAdd(WebTest):
         assert response.status == "200 OK"
 
         self.assertEqual(
-            u"Nerf Herder has been added!",
+            "Nerf Herder has been added!",
             response.html.find("div", "message success").text.strip(),
         )
         assert User.objects.get(username="john.doe").userartist_set.count() == 1

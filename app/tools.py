@@ -32,8 +32,8 @@ def arrange_for_table(items, columns):
                    # Next line compensates for empty cells in the last row.
                    max(0, j - L % N  if i < M - 1 and L % N else 0)]
              if i * N + j < L else None
-             for j in xrange(N)]
-            for i in xrange(M)]
+             for j in range(N)]
+            for i in range(M)]
 
 def str_to_date(date_str):
     """ Convert a date string into int

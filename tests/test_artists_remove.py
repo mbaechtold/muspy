@@ -31,7 +31,7 @@ class TestArtistsRemove(WebTest):
         response = response.follow()
 
         self.assertEqual(
-            u"Use checkboxes to select the artists you want to remove.",
+            "Use checkboxes to select the artists you want to remove.",
             response.html.find("div", "message info").text.strip(),
         )
 
@@ -42,7 +42,7 @@ class TestArtistsRemove(WebTest):
         response = response.follow()
 
         self.assertEqual(
-            u"Use checkboxes to select the artists you want to remove.",
+            "Use checkboxes to select the artists you want to remove.",
             response.html.find("div", "message info").text.strip(),
         )
 
@@ -70,6 +70,6 @@ class TestArtistsRemove(WebTest):
 
         # John is no longer following any artist.
         self.assertEqual(
-            u"Removed 1 artist.", response.html.find("div", "message success").text.strip()
+            "Removed 1 artist.", response.html.find("div", "message success").text.strip()
         )
         assert john.userartist_set.count() == 0

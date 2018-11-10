@@ -16,10 +16,10 @@ class TestStar(WebTest):
 
         response = self.app.post("/star", {"id": release.id, "value": 1}, user="john_doe")
         assert response.status == "200 OK"
-        assert response.content == "{}"
+        assert response.content == b"{}"
 
         assert models.Star.objects.count() == 1
-        assert models.Star.objects.first().user.username == u"john_doe"
+        assert models.Star.objects.first().user.username == "john_doe"
         assert models.Star.objects.first().release_group == release
 
     def test_unstar(self):

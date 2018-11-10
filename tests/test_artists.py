@@ -29,7 +29,7 @@ class TestArtists(WebTest):
         response = response.follow()
         assert response.status == "200 OK"
         self.assertEqual(
-            u"Nerf Herder has been added!",
+            "Nerf Herder has been added!",
             response.html.find("div", "message success").text.strip(),
         )
 

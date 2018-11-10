@@ -56,8 +56,8 @@ class TestArtist(WebTest):
         # Albums from the future are not displayed.
         self.assertEqual(
             [
-                u"2020-12-31: Nerf Herder \u2013 Future Album (Album)",
-                u"2002-08-13: Nerf Herder \u2013 American Cheese (Album)",
+                "2020-12-31: Nerf Herder \u2013 Future Album (Album)",
+                "2002-08-13: Nerf Herder \u2013 American Cheese (Album)",
             ],
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )

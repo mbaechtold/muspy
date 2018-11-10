@@ -14,7 +14,7 @@ class TestSignIn(WebTest):
         response = form.submit()
         assert response.status == "200 OK"
 
-        error_message = u"Please enter a correct username and password. Note that both fields may be case-sensitive."
+        error_message = "Please enter a correct username and password. Note that both fields may be case-sensitive."
         assert response.html.find("ul", "errorlist").find("li").text == error_message
 
         assert response.context["user"].is_anonymous == True
@@ -34,7 +34,7 @@ class TestSignIn(WebTest):
         response = form.submit()
         assert response.status == "200 OK"
 
-        error_message = u"Please enter a correct username and password. Note that both fields may be case-sensitive."
+        error_message = "Please enter a correct username and password. Note that both fields may be case-sensitive."
         assert response.html.find("ul", "errorlist").find("li").text == error_message
 
         assert response.context["user"].is_anonymous == True

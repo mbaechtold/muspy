@@ -21,7 +21,7 @@ class TestDeleteAccount(WebTest):
         response = self.app.get("/settings", user=john_doe)
         assert response.status == "200 OK"
         assert response.context["user"].is_anonymous == False
-        assert response.context["user"].username == u"john.doe"
+        assert response.context["user"].username == "john.doe"
 
         # There a two forms on the settings page. Submit the second form.
         response = response.forms[1].submit()

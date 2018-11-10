@@ -162,7 +162,6 @@ class Base(Configuration):
         'django.contrib.sites',
         'django_extensions',
         'storages',
-        'piston',
         'app',
     ]
 

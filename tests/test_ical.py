@@ -34,10 +34,10 @@ class TestIcal(WebTest):
         response = self.app.get("/ical?id=john.doe")
         assert response.status == "200 OK"
         self.assertEqual(
-            "BEGIN:VCALENDAR\r\n"
-            "VERSION:2.0\r\n"
-            "PRODID:-//Muspy//Muspy releases//EN\r\n"
-            "END:VCALENDAR\r\n",
+            b"BEGIN:VCALENDAR\r\n"
+            b"VERSION:2.0\r\n"
+            b"PRODID:-//Muspy//Muspy releases//EN\r\n"
+            b"END:VCALENDAR\r\n",
             response.content,
         )
 
@@ -58,15 +58,15 @@ class TestIcal(WebTest):
         response = self.app.get("/ical?id=john.doe")
         assert response.status == "200 OK"
         self.assertEqual(
-            "BEGIN:VCALENDAR\r\n"
-            "VERSION:2.0\r\n"
-            "PRODID:-//Muspy//Muspy releases//EN\r\n"
-            "BEGIN:VEVENT\r\n"
-            "SUMMARY:Nerf Herder - Rockingham\r\n"
-            "DTSTART;VALUE=DATE:20160221\r\n"
-            "DTEND;VALUE=DATE:20160222\r\n"
-            "UID:1-john.doe@muspy.com\r\n"
-            "END:VEVENT\r\n"
-            "END:VCALENDAR\r\n",
+            b'BEGIN:VCALENDAR\r\n'
+            b'VERSION:2.0\r\n'
+            b'PRODID:-//Muspy//Muspy releases//EN\r\n'
+            b'BEGIN:VEVENT\r\n'
+            b'SUMMARY:Nerf Herder - Rockingham\r\n'
+            b'DTSTART;VALUE=DATE:20160221\r\n'
+            b'DTEND;VALUE=DATE:20160222\r\n'
+            b'UID:1-john.doe@muspy.com\r\n'
+            b'END:VEVENT\r\n'
+            b'END:VCALENDAR\r\n',
             response.content,
         )

@@ -18,7 +18,7 @@ class TestResetForm(WebTest):
         response = form.submit()
         assert response.status == "200 OK"
         self.assertEqual(
-            u"Unknown email address. Please enter another.",
+            "Unknown email address. Please enter another.",
             response.html.find("ul", "errorlist").text,
         )
 
@@ -31,7 +31,7 @@ class TestResetForm(WebTest):
         response = form.submit().follow()
         assert response.status == "200 OK"
         self.assertEqual(
-            u"An email has been sent to john@doe.local describing how to obtain your new password.",
+            "An email has been sent to john@doe.local describing how to obtain your new password.",
             response.html.find("div", "message success").text.strip(),
         )
 
@@ -52,7 +52,7 @@ class TestResetForm(WebTest):
         response = form.submit()
         assert response.status == "200 OK"
         self.assertEqual(
-            u"Unknown email address. Please enter another.",
+            "Unknown email address. Please enter another.",
             response.html.find("ul", "errorlist").text,
         )
 
@@ -66,7 +66,7 @@ class TestResetCode(WebTest):
         response = self.app.get("/reset?code=doesnotexist")
         assert response.status == "200 OK"
         self.assertEqual(
-            u"Invalid code, your password was not reset.",
+            "Invalid code, your password was not reset.",
             response.html.find("div", id="content").find("p").text,
         )
 

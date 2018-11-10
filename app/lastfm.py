@@ -16,11 +16,11 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 import re
-from urllib import urlencode
-from urllib2 import Request, urlopen
+from urllib.parse import urlencode
+from urllib.request import Request, urlopen
 from xml.etree import ElementTree as et
 
-from settings import LASTFM_API_KEY
+from django.conf import settings
 
 
 def has_user(username):
@@ -68,20 +68,13 @@ def get_cover_urls(artist, album):
 
 def _fetch(method, **kw):
     url = 'http://ws.audioscrobbler.com/2.0/'
-    params = {'method': method, 'api_key': LASTFM_API_KEY}
+    params = {'method': method, 'api_key': settings.LASTFM_API_KEY}
     params.update(kw)
-    url += '?' + _urlencode(params)
+    url += '?' + urlencode(params)
 
     request = Request(url, headers = {'User-Agent': 'muspy/2.0'})
     response = urlopen(request)
-    return response.read()
-
-# TODO: duplicate in musicbrainz.py
-def _urlencode(params):
-    if isinstance(params, dict):
-        params = params.items()
-    return urlencode([(k, v.encode('utf-8') if isinstance(v, unicode) else v)
-                      for k, v in params])
+    return response.read().decode()
 
 def _parse_artist(element):
     d = {}

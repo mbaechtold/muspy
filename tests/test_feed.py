@@ -33,16 +33,16 @@ class TestFeed(WebTest):
         response = self.app.get("/feed?id=john.doe")
         assert response.status == "200 OK"
         self.assertEqual(
-            '<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n    '
-            '<title type="text">[muspy] New Releases</title>\n    '
-            '<link href="http://testserver/feed?id=john.doe" rel="self" type="application/atom+xml" />\n    '
-            '<link href="http://testserver/" rel="alternate" type="text/html" />\n    '
-            "<id>http://testserver/feed?id=john.doe</id>\n    "
-            "<updated>None</updated>\n    "
-            "<author><name>muspy</name></author>\n    "
-            "<icon>/static/favicon.ico</icon>\n    "
-            "<logo>/static/logo.gif</logo>\n    \n"
-            "</feed>\n",
+            b'<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">\n    '
+            b'<title type="text">[muspy] New Releases</title>\n    '
+            b'<link href="http://testserver/feed?id=john.doe" rel="self" type="application/atom+xml" />\n    '
+            b'<link href="http://testserver/" rel="alternate" type="text/html" />\n    '
+            b"<id>http://testserver/feed?id=john.doe</id>\n    "
+            b"<updated>None</updated>\n    "
+            b"<author><name>muspy</name></author>\n    "
+            b"<icon>/static/favicon.ico</icon>\n    "
+            b"<logo>/static/logo.gif</logo>\n    \n"
+            b"</feed>\n",
             response.content,
         )
 

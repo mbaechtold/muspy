@@ -14,11 +14,10 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
-
+from io import BytesIO
 import logging
 import re
-import StringIO
-from urllib2 import Request, urlopen
+from urllib.request import Request, urlopen
 
 from PIL import Image
 
@@ -140,16 +139,18 @@ def get_cover(mbid):
     if releases is None:
         logging.warning('[ERR] Could not get releases, skipping')
         return
-    releases = [r for r in releases if r.get('date')]
+
+    def _get_sortable_date(value):
+        if not value:
+            return '1970-99-99'
+        while len(value) < 10:
+            value += '-99'
+        return value
 
     # Order releases by date.
-    def by_date(a, b):
-        # Convert 2011 to 2011-99-99 and 2011-01 to 2011-01-99.
-        d1, d2 = a['date'], b['date']
-        while len(d1) < 10: d1 += '-99'
-        while len(d2) < 10: d2 += '-99'
-        return cmp(d1, d2)
-    releases = sorted(releases, cmp=by_date)
+    for release in releases:
+        release['sortable_date'] = _get_sortable_date(release.get('date'))
+    releases = sorted(releases, key=lambda item: item['sortable_date'])
 
     # We don't want to check all 100 releases.
     releases = [r['id'] for r in releases][:10]
@@ -170,7 +171,7 @@ def get_cover(mbid):
 
         # Parsing the release page
         pattern = r'<div class="cover-art">\s*<img src="(?P<url>[^"]+)"'
-        match = re.search(pattern, html)
+        match = re.search(pattern, html.decode())
         if not match:
             logging.info('[JOB] No cover art, skipping')
             continue
@@ -205,9 +206,10 @@ def _fetch_cover(mbid, url):
 
     logging.info('[JOB] Saving the cover')
     try:
-        im = Image.open(StringIO.StringIO(image))
+        im = Image.open(BytesIO(image))
         im = im.resize((120, 120), Image.ANTIALIAS)
-        f = StringIO.StringIO()
+        im = im.convert('RGB')
+        f = BytesIO()
         im.save(f, 'JPEG', quality=95)
         image = f.getvalue()
         Cover(mbid, image)

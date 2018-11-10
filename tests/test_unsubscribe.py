@@ -19,7 +19,7 @@ class TestUnsubscribe(WebTest):
         assert response.status == "200 OK"
 
         self.assertEqual(
-            u"Bad request, you were not unsubscribed.",
+            "Bad request, you were not unsubscribed.",
             response.html.find("div", "message error").text.strip(),
         )
 
@@ -40,7 +40,7 @@ class TestUnsubscribe(WebTest):
         assert response.status == "200 OK"
 
         self.assertEqual(
-            u"Bad request, you were not unsubscribed.",
+            "Bad request, you were not unsubscribed.",
             response.html.find("div", "message error").text.strip(),
         )
 
@@ -58,7 +58,7 @@ class TestUnsubscribe(WebTest):
         assert response.status == "200 OK"
 
         self.assertEqual(
-            u"You have successfully unsubscribed from release notifications. If you change your mind, you can subscribe to notifications on the Settings page.",
+            "You have successfully unsubscribed from release notifications. If you change your mind, you can subscribe to notifications on the Settings page.",
             response.html.find("div", "message success").text.strip(),
         )
         john.profile.refresh_from_db()

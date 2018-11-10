@@ -47,7 +47,7 @@ class TestReleases(WebTest):
 
         # Only the albums from followed artists are shown.
         self.assertEqual(
-            [u"2016-02-21: Nerf Herder \u2013 Rockingham (Album)"],
+            ["2016-02-21: Nerf Herder \u2013 Rockingham (Album)"],
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )
 
@@ -77,9 +77,9 @@ class TestReleases(WebTest):
         # The albums are sorted by release date (in descending order).
         self.assertEqual(
             [
-                u"2000-12-04: Nerf Herder \u2013 Album #3 (Album)",
-                u"2000-12-03: Nerf Herder \u2013 Album #2 (Album)",
-                u"2000-12-02: Nerf Herder \u2013 Album #1 (Album)",
+                "2000-12-04: Nerf Herder \u2013 Album #3 (Album)",
+                "2000-12-03: Nerf Herder \u2013 Album #2 (Album)",
+                "2000-12-02: Nerf Herder \u2013 Album #1 (Album)",
             ],
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )
@@ -94,9 +94,9 @@ class TestReleases(WebTest):
         # The starred album is shown at the top.
         self.assertEqual(
             [
-                u"2000-12-02: Nerf Herder \u2013 Album #1 (Album)",
-                u"2000-12-04: Nerf Herder \u2013 Album #3 (Album)",
-                u"2000-12-03: Nerf Herder \u2013 Album #2 (Album)",
+                "2000-12-02: Nerf Herder \u2013 Album #1 (Album)",
+                "2000-12-04: Nerf Herder \u2013 Album #3 (Album)",
+                "2000-12-03: Nerf Herder \u2013 Album #2 (Album)",
             ],
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )

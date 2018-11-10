@@ -51,7 +51,7 @@ class TestIndex(WebTest):
 
         # Albums from the future are not displayed.
         self.assertEqual(
-            [u"2002-08-13: Nerf Herder \u2013 American Cheese (Album)"],
+            ["2002-08-13: Nerf Herder \u2013 American Cheese (Album)"],
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )
 
@@ -92,7 +92,7 @@ class TestIndex(WebTest):
 
         # Deleted albums are not displayed.
         self.assertEqual(
-            [u"2002-08-13: Nerf Herder \u2013 American Cheese (Album)"],
+            ["2002-08-13: Nerf Herder \u2013 American Cheese (Album)"],
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )
 

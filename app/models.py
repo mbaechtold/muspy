@@ -252,7 +252,7 @@ LIMIT %s OFFSET %s
             # Release types.
             profile = user.profile
             types = profile.get_types()
-            ss = ','.join('%s' for i in xrange(len(types)))
+            ss = ','.join('%s' for i in range(len(types)))
             where += '\nAND "app_releasegroup"."type" IN (' + ss + ')'
             params.extend(types)
 
@@ -370,7 +370,7 @@ class UserProfile(models.Model):
 
     def generate_code(self):
         code_chars = '23456789abcdefghijkmnpqrstuvwxyz'
-        return ''.join(random.choice(code_chars) for i in xrange(UserProfile.code_length))
+        return ''.join(random.choice(code_chars) for i in range(UserProfile.code_length))
 
     def purge(self):
         user = self.user
@@ -482,7 +482,7 @@ class UserProfile(models.Model):
     @classmethod
     def create_user(cls, email, password):
         chars = string.ascii_lowercase + string.digits
-        username = ''.join(random.choice(chars) for i in xrange(30))
+        username = ''.join(random.choice(chars) for i in range(30))
         return User.objects.create_user(username, email, password)
 
 
