@@ -7,7 +7,6 @@ from app.tools import str_to_date
 
 
 class TestTools(WebTest):
-
     def test_arrange_for_table(self):
         assert arrange_for_table(["a", "b", "c", "d"], 3) == [["a", "c", "d"], ["b", None, None]]
 

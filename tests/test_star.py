@@ -8,6 +8,7 @@ class TestStar(WebTest):
     """
     Test the starring of releases
     """
+
     csrf_checks = False
 
     def test_star(self):

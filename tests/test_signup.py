@@ -8,6 +8,7 @@ class TestSignUp(WebTest):
     """
     A user must be able to create an account.
     """
+
     def test_sign_up(self):
         # There is no user in the beginning.
         assert User.objects.count() == 0

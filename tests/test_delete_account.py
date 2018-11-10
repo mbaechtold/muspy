@@ -8,8 +8,9 @@ class TestDeleteAccount(WebTest):
     """
     A user must be able to delete her account.
     """
+
     def test_delete_account(self):
-        john_doe = User.objects.create(username='john.doe', email='john@doe.local')
+        john_doe = User.objects.create(username="john.doe", email="john@doe.local")
         assert User.objects.count() == 1
 
         # A user profile has been created automatically.
@@ -20,7 +21,7 @@ class TestDeleteAccount(WebTest):
         response = self.app.get("/settings", user=john_doe)
         assert response.status == "200 OK"
         assert response.context["user"].is_anonymous == False
-        assert response.context["user"].username == u'john.doe'
+        assert response.context["user"].username == u"john.doe"
 
         # There a two forms on the settings page. Submit the second form.
         response = response.forms[1].submit()

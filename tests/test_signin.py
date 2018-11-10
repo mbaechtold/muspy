@@ -3,7 +3,6 @@ from django_webtest import WebTest
 
 
 class TestSignIn(WebTest):
-
     def test_sign_in_with_non_existing_user(self):
         response = self.app.get("/signin")
         assert response.status == "200 OK"
@@ -16,13 +15,13 @@ class TestSignIn(WebTest):
         assert response.status == "200 OK"
 
         error_message = u"Please enter a correct username and password. Note that both fields may be case-sensitive."
-        assert response.html.find("ul", "errorlist").find('li').text == error_message
+        assert response.html.find("ul", "errorlist").find("li").text == error_message
 
         assert response.context["user"].is_anonymous == True
 
     def test_sign_in_wiht_wrong_password(self):
         john = User.objects.create(username="john.doe", email="john@doe.local")
-        john.set_password('foo')
+        john.set_password("foo")
         john.save()
 
         response = self.app.get("/signin")
@@ -36,13 +35,13 @@ class TestSignIn(WebTest):
         assert response.status == "200 OK"
 
         error_message = u"Please enter a correct username and password. Note that both fields may be case-sensitive."
-        assert response.html.find("ul", "errorlist").find('li').text == error_message
+        assert response.html.find("ul", "errorlist").find("li").text == error_message
 
         assert response.context["user"].is_anonymous == True
 
     def test_sign_in_with_correct_password(self):
         john = User.objects.create(username="john.doe", email="john@doe.local")
-        john.set_password('foo')
+        john.set_password("foo")
         john.save()
 
         response = self.app.get("/signin")
@@ -56,5 +55,5 @@ class TestSignIn(WebTest):
 
         # If the authentication was successful, the user is redirected to the "/artists" view.
         assert response.status == "200 OK"
-        assert response.request.url == 'http://testserver/artists'
+        assert response.request.url == "http://testserver/artists"
         assert response.context["user"].is_anonymous == False

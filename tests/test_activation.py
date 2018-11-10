@@ -6,6 +6,7 @@ class TestActivation(WebTest):
     """
     A user must be able to activate her account.
     """
+
     def test_resend_activation(self):
         # Create a user we can work with in this test.
         john_doe = User.objects.create(username="john.doe", email="john@doe.local")
