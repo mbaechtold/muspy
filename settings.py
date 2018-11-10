@@ -257,6 +257,7 @@ class Production(SentryMixin, Base):
     AWS_LOCATION = values.Value("your-spaces-files-folder", environ_prefix="")
     AWS_SECRET_ACCESS_KEY = values.Value("your-spaces-secret-access-key", environ_prefix="")
     AWS_STORAGE_BUCKET_NAME = values.Value("your-storage-bucket-name", environ_prefix="")
+    AWS_DEFAULT_ACL = None
 
     AWS_S3_ENDPOINT_URL = values.Value("https://ams3.digitaloceanspaces.com", environ_prefix="")
     AWS_S3_REGION_NAME = values.Value("ams3", environ_prefix="")
