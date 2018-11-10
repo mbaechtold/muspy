@@ -20,7 +20,7 @@ import logging
 
 from django.db import connection, transaction
 
-from settings import DEBUG
+from django.conf import settings
 
 from app.models import *
 import app.musicbrainz as mb
@@ -50,7 +50,7 @@ def check():
 
         # Artist names don't change that often. Update artists at most 3 times
         # a month, unless we are debugging.
-        if DEBUG or day in (1, 11, 21):
+        if settings.DEBUG or day in (1, 11, 21):
             jobs.process()
             tools.sleep()
             logging.info('Updating artist %s' % artist.mbid)
