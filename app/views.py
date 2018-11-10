@@ -26,8 +26,7 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFoun
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_control
-
-from settings import LOGIN_REDIRECT_URL
+from django.conf import settings as django_settings
 
 from app import lastfm
 from app.cover import Cover
@@ -435,7 +434,7 @@ def signup(request):
             password=form.cleaned_data['password'])
         user.profile.send_activation_email()
         login(request, user)
-        return redirect(LOGIN_REDIRECT_URL)
+        return redirect(django_settings.LOGIN_REDIRECT_URL)
 
     return render(request, 'signup.html', {'form': form})
 
