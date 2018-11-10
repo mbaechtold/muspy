@@ -8,6 +8,8 @@ django-webtest = "*"
 pytest-django = "*"
 pytest-cov = "*"
 pytest-env = "*"
+model-mommy = "*"
+freezegun = "*"
 
 [packages]
 django-piston = "==0.2.3"
