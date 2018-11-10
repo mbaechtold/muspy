@@ -14,7 +14,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
-
+import os
 import time
 
 from django.db import connection
@@ -29,10 +29,13 @@ def sleep():
     # Don't keep an open database connection while sleeping.
     connection.close()
 
-    DELAY = 2 # seconds
-    duration = time.time() - sleep.start
-    if DELAY - duration > 0:
-        time.sleep(DELAY - duration)
-    sleep.start = time.time()
+    if os.environ.get('TESTING'):
+        time.sleep(2)
+    else:
+        DELAY = 2 # seconds
+        duration = time.time() - sleep.start
+        if DELAY - duration > 0:
+            time.sleep(DELAY - duration)
+        sleep.start = time.time()
 
 sleep.start = time.time()

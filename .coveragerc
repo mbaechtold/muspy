@@ -1,5 +1,7 @@
 [run]
 source =
     app
+    daemon
 omit =
     app/migrations/*
+    dameon/daemon
