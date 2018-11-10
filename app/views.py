@@ -42,7 +42,7 @@ def activate(request):
             messages.error(request, 'Invalid activation code, your email address was not activated.')
         return redirect('/')
 
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         messages.error(request, 'You need to sign in to activate your email address.')
         return redirect('/')
 
@@ -67,7 +67,7 @@ def artist(request, mbid):
         offset = int(request.GET.get('offset', 0))
     except ValueError:
         return HttpResponseNotFound()
-    user_has_artist = request.user.is_authenticated() and UserArtist.get(request.user, artist)
+    user_has_artist = request.user.is_authenticated and UserArtist.get(request.user, artist)
     if user_has_artist:
         show_stars = True
         release_groups = ReleaseGroup.get(
