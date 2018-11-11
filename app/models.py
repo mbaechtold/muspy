@@ -132,7 +132,7 @@ class Job(models.Model):
     GET_COVER = 3
     IMPORT_LASTFM = 4
 
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     type = models.IntegerField()
     data = models.TextField()
 
@@ -173,8 +173,8 @@ class Notification(models.Model):
         db_table = 'app_notification'
         unique_together = ('user', 'release_group')
 
-    user = models.ForeignKey(User)
-    release_group = models.ForeignKey('ReleaseGroup')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    release_group = models.ForeignKey('ReleaseGroup', on_delete=models.CASCADE)
 
 
 class ReleaseGroup(models.Model):
@@ -188,7 +188,7 @@ class ReleaseGroup(models.Model):
     class Meta:
         unique_together = ('artist', 'mbid')
 
-    artist = models.ForeignKey(Artist)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     mbid = models.CharField(max_length=36)
     name = models.CharField(max_length=512)
     type = models.CharField(max_length=16)
@@ -288,8 +288,8 @@ class Star(models.Model):
         db_table = 'app_star'
         unique_together = ('user', 'release_group')
 
-    user = models.ForeignKey(User)
-    release_group = models.ForeignKey(ReleaseGroup)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    release_group = models.ForeignKey(ReleaseGroup, on_delete=models.CASCADE)
 
     @classmethod
     def set(cls, user, id, value):
@@ -308,8 +308,8 @@ class UserArtist(models.Model):
     class Meta:
         unique_together = ('user', 'artist')
 
-    user = models.ForeignKey(User)
-    artist = models.ForeignKey(Artist)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
 
     @classmethod
@@ -340,7 +340,7 @@ class UserProfile(models.Model):
 
     code_length = 16
 
-    user = models.OneToOneField(User, related_name='profile')
+    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
 
     notify = models.BooleanField(default=True)
     notify_album = models.BooleanField(default=True)
@@ -488,7 +488,7 @@ class UserProfile(models.Model):
 
 class UserSearch(models.Model):
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     search = models.CharField(max_length=512)
 
     @classmethod

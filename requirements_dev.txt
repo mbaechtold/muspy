@@ -4,7 +4,7 @@ attrs==18.2.0
 beautifulsoup4==4.6.3
 coverage==4.5.1
 django-webtest==1.9.4
-django==1.11
+django==2.0.9
 freezegun==0.3.11
 model-mommy==1.6.0
 more-itertools==4.3.0
