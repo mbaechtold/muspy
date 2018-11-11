@@ -1,5 +1,4 @@
 from django_webtest import WebTest
-from freezegun import freeze_time
 from model_mommy import mommy
 
 from app import models
@@ -16,11 +15,11 @@ class TestReleases(WebTest):
         assert response.url == "/signin?next=/releases"
 
     def test_show_releases_of_the_artists_a_user_follows(self):
+        # Create a user we can work with in the test.
         john = mommy.make("User", username="john.doe")
 
-        # John follow Nerf Herder
+        # Create the artist "Nerf Herder" and a release.
         nerf_herder = mommy.make("app.Artist", name="Nerf Herder")
-        mommy.make("app.UserArtist", user=john, artist=nerf_herder)
         mommy.make(
             "app.ReleaseGroup",
             artist=nerf_herder,
@@ -30,9 +29,12 @@ class TestReleases(WebTest):
             date=20160221,
         )
 
-        # John does not follow Foo Fighters.
+        # John follows "Nerf Herder".
+        mommy.make("app.UserArtist", user=john, artist=nerf_herder)
+
+        # Create another artist having an album. Note how john does not follow this artist..
         foo_fighters = mommy.make("app.Artist", name="Foo Fighters")
-        in_your_honor = mommy.make(
+        mommy.make(
             "app.ReleaseGroup",
             artist=foo_fighters,
             name="In Your Honor",
@@ -52,13 +54,11 @@ class TestReleases(WebTest):
         )
 
     def test_starred_releases_on_top(self):
+        # Create a user we can work with in the test.
         john = mommy.make("User", username="john.doe")
 
-        # John follows Nerf Herder.
+        # Create the artist "Nerf Herder" and 3 (fake) releases.
         nerf_herder = mommy.make("app.Artist", name="Nerf Herder")
-        mommy.make("app.UserArtist", user=john, artist=nerf_herder)
-
-        # Create 3 (fake) releases of Nerf Herder.
         for i in range(1, 4):
             mommy.make(
                 "app.ReleaseGroup",
@@ -70,7 +70,10 @@ class TestReleases(WebTest):
                 date=20001201 + i,
             )
 
-        # Visit the releases view in the browser.
+        # John follows Nerf Herder.
+        mommy.make("app.UserArtist", user=john, artist=nerf_herder)
+
+        # John opens the releases view in the browser.
         response = self.app.get("/releases", user=john)
         assert response.status == "200 OK"
 
@@ -87,7 +90,7 @@ class TestReleases(WebTest):
         # John stars the oldest albums.
         mommy.make("app.Star", user=john, release_group=models.ReleaseGroup.objects.get(id=1))
 
-        # Visit the releases view in the browser.
+        # John refreshes the releases view in the browser.
         response = self.app.get("/releases", user=john)
         assert response.status == "200 OK"
 

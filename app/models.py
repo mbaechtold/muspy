@@ -22,9 +22,10 @@ from time import sleep
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.db import connection, IntegrityError, models, transaction
+from django.db import IntegrityError, connection, models, transaction
 from django.db.backends.signals import connection_created
-from django.db.models import Count, Q
+from django.db.models import OuterRef, Subquery
+from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
@@ -212,58 +213,40 @@ class ReleaseGroup(models.Model):
             assert 'Both artist and user are None'
             return None
 
-        # Unfortunately I don't see how to use ORM for these queries.
-        sql = """
-SELECT
-    "app_releasegroup"."id",
-    "app_releasegroup"."artist_id",
-    "app_releasegroup"."mbid",
-    "app_releasegroup"."name",
-    "app_releasegroup"."type",
-    "app_releasegroup"."date",
-    "app_releasegroup"."is_deleted",
-    "app_artist"."mbid" AS "artist_mbid",
-    "app_artist"."name" AS "artist_name",
-    "app_artist"."sort_name" AS "artist_sort_name",
-    "app_artist"."disambiguation" AS "artist_disambiguation"
-    {select}
-FROM "app_releasegroup"
-JOIN "app_artist" ON "app_artist"."id" = "app_releasegroup"."artist_id"
-{join}
-WHERE "app_releasegroup"."is_deleted" = 0
-{where}
-ORDER BY {order}
-LIMIT %s OFFSET %s
-"""
-        select = join = where = ''
-        order = '"app_releasegroup"."date" DESC'
-        params = []
+        queryset = cls.objects.exclude(is_deleted=True).order_by('-date')
+
         if artist:
-            where += '\nAND "app_releasegroup"."artist_id" = %s'
-            params.append(artist.id)
+            queryset = queryset.filter(artist=artist)
+
         if user:
-            # Stars.
-            select += ',\n"app_star"."id" as "is_starred"'
-            join += '\nJOIN "app_userartist" ON "app_userartist"."artist_id" = "app_artist"."id"'
-            join += '\nLEFT JOIN "app_star" ON "app_star"."user_id" = "app_userartist"."user_id" AND "app_star"."release_group_id" = "app_releasegroup"."id"'
-            where += '\nAND "app_userartist"."user_id" = %s'
-            params.append(user.id)
-            order = '"app_star"."user_id" DESC, ' + order
-            # Release types.
+            # Only include release of artists the user is following.
+            queryset = queryset.filter(artist_id__in=Subquery(
+                UserArtist.objects.filter(user=user).filter(artist_id=OuterRef('artist_id')).values("artist_id"),
+            ))
+
+            # Only include release types the user has configured in the settings.
             profile = user.profile
             types = profile.get_types()
-            ss = ','.join('%s' for i in range(len(types)))
-            where += '\nAND "app_releasegroup"."type" IN (' + ss + ')'
-            params.extend(types)
+            # If the user is not tracking any release types, no releases will be shown.
+            # TODO: Warn the user if she's not tracking any release types.
+            queryset = queryset.filter(type__in=types)
 
             if feed and profile.legacy_id:
                 # Don't include release groups added during the import
                 # TODO: Feel free to remove this check some time in 2013.
-                where += '\nAND "app_releasegroup"."id" > 261202'
+                queryset = queryset.filter(is_gt=261202)
 
-        sql = sql.format(select=select, join=join, where=where, order=order)
-        params.extend([limit, offset])
-        return cls.objects.raw(sql, params)
+            # Get the starred releases of the users. Starred releases will be shown before the other releases.
+            queryset = queryset.annotate(
+                is_starred=Coalesce(
+                    Subquery(
+                        Star.objects.filter(release_group_id=OuterRef('id')).filter(user=user).values('id'),
+                    ), 0
+                )
+            )
+            queryset = queryset.order_by('-is_starred', '-date')
+
+        return queryset[offset: offset + limit]
 
     @classmethod
     def get_calendar(cls, date, limit, offset):
