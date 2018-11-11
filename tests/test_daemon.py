@@ -1,4 +1,4 @@
-from django_webtest import WebTest
+from django_webtest import TransactionWebTest
 from freezegun import freeze_time
 from model_mommy import mommy
 
@@ -6,7 +6,7 @@ from app import models
 from daemon import releases
 
 
-class TestDaemon(WebTest):
+class TestDaemon(TransactionWebTest):
     """
     Test the "artists remove" view.
 
