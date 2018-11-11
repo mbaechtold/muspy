@@ -14,7 +14,7 @@ class TestDaemon(WebTest):
     """
 
     def test_daemon(self):
-        mommy.make("app.Artist", name="Nerf Herder", mbid="da66103a-1307-400d-8261-89d856126867",)
+        mommy.make("app.Artist", name="Nerf Herder", mbid="da66103a-1307-400d-8261-89d856126867")
 
         # Freeze the time, because some checks are only executed at a specific day of the month.
         # Unfortunately, the method decorator "@freeze_time()" seems to have no effect.
@@ -40,7 +40,7 @@ class TestDaemon(WebTest):
         freezer.stop()
 
     def test_add_add_release_group_job(self):
-        mommy.make("app.Artist", name="Nerf Herder", mbid="da66103a-1307-400d-8261-89d856126867", )
+        mommy.make("app.Artist", name="Nerf Herder", mbid="da66103a-1307-400d-8261-89d856126867")
         mommy.make(
             "app.Job",
             type=models.Job.ADD_RELEASE_GROUPS,
@@ -57,7 +57,7 @@ class TestDaemon(WebTest):
         freezer.stop()
 
     def test_get_cover_job(self):
-        mommy.make("app.Artist", name="Nerf Herder", mbid="da66103a-1307-400d-8261-89d856126867", )
+        mommy.make("app.Artist", name="Nerf Herder", mbid="da66103a-1307-400d-8261-89d856126867")
         mommy.make(
             "app.Job", type=models.Job.GET_COVER, data="4824ab74-167e-48db-abb1-8e31088331ba"
         )

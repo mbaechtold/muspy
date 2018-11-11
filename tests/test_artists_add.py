@@ -54,7 +54,6 @@ class TestArtistsAdd(WebTest):
         assert response.status == "200 OK"
 
         self.assertEqual(
-            "Nerf Herder has been added!",
-            response.html.find("div", "message success").text.strip(),
+            "Nerf Herder has been added!", response.html.find("div", "message success").text.strip()
         )
         assert User.objects.get(username="john.doe").userartist_set.count() == 1

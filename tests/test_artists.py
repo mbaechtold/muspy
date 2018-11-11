@@ -29,8 +29,7 @@ class TestArtists(WebTest):
         response = response.follow()
         assert response.status == "200 OK"
         self.assertEqual(
-            "Nerf Herder has been added!",
-            response.html.find("div", "message success").text.strip(),
+            "Nerf Herder has been added!", response.html.find("div", "message success").text.strip()
         )
 
         # The artist has been created.
