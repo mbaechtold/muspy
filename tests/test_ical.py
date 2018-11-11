@@ -1,12 +1,13 @@
-from django_webtest import WebTest
-from freezegun import freeze_time
+from django_webtest import TransactionWebTest
 from model_mommy import mommy
 
 
-class TestIcal(WebTest):
+class TestIcal(TransactionWebTest):
     """
     Test the ical view.
     """
+
+    reset_sequences = True
 
     def test_with_anonymous_user(self):
         response = self.app.get("/ical", expect_errors=True)
@@ -58,15 +59,15 @@ class TestIcal(WebTest):
         response = self.app.get("/ical?id=john.doe")
         assert response.status == "200 OK"
         self.assertEqual(
-            b'BEGIN:VCALENDAR\r\n'
-            b'VERSION:2.0\r\n'
-            b'PRODID:-//Muspy//Muspy releases//EN\r\n'
-            b'BEGIN:VEVENT\r\n'
-            b'SUMMARY:Nerf Herder - Rockingham\r\n'
-            b'DTSTART;VALUE=DATE:20160221\r\n'
-            b'DTEND;VALUE=DATE:20160222\r\n'
-            b'UID:1-john.doe@muspy.com\r\n'
-            b'END:VEVENT\r\n'
-            b'END:VCALENDAR\r\n',
+            b"BEGIN:VCALENDAR\r\n"
+            b"VERSION:2.0\r\n"
+            b"PRODID:-//Muspy//Muspy releases//EN\r\n"
+            b"BEGIN:VEVENT\r\n"
+            b"SUMMARY:Nerf Herder - Rockingham\r\n"
+            b"DTSTART;VALUE=DATE:20160221\r\n"
+            b"DTEND;VALUE=DATE:20160222\r\n"
+            b"UID:1-john.doe@muspy.com\r\n"
+            b"END:VEVENT\r\n"
+            b"END:VCALENDAR\r\n",
             response.content,
         )
