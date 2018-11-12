@@ -81,6 +81,26 @@ class SentryMixin(object):
         return logging
 
 
+class CeleryMixin:
+
+    @property
+    def CELERY_BROKER_URL(self):
+        return os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379')
+
+    @property
+    def INSTALLED_APPS(self):
+        installed_apps = super().INSTALLED_APPS
+        return installed_apps + ['django_celery_beat']
+
+    CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+    @property
+    def CELERY_TIMEZONE(self):
+        return super().TIME_ZONE
+
+    CELERY_BEAT_SCHEDULE = {}
+
+
 class Base(Configuration):
 
     ########################################################################
@@ -118,7 +138,8 @@ class Base(Configuration):
         'default': dj_database_url.config(default='sqlite:///db/muspy.db')
     }
 
-    TIME_ZONE = None
+    USE_TZ = True
+    TIME_ZONE = 'UTC'
     USE_I18N = False
     LOGIN_REDIRECT_URL = '/artists'
     LOGIN_URL = '/signin'
@@ -162,7 +183,7 @@ class Base(Configuration):
         'django.contrib.sites',
         'django_extensions',
         'storages',
-        'app',
+        'app.apps.MuspyApp',
     ]
 
     SITE_ID = 1
@@ -231,7 +252,19 @@ class Base(Configuration):
     # fmt: on
 
 
-class Production(SentryMixin, Base):
+class Development(CeleryMixin, Base):
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        }
+    }
+    CELERY_BROKER_POOL_LIMIT = 1
+    CELERY_BROKER_CONNECTION_TIMEOUT = 10
+    CELERY_IGNORE_RESULT = False
+    CELERY_TASK_RESULT_EXPIRES = 600
+
+
+class Production(SentryMixin, CeleryMixin,  Base):
 
     DEBUG = False
 

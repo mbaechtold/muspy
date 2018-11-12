@@ -13,7 +13,7 @@ if __name__ == "__main__":
         envdir.open(envdir_folder)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
-    os.environ.setdefault('DJANGO_CONFIGURATION', 'Base')
+    os.environ.setdefault('DJANGO_CONFIGURATION', 'Development')
 
     from configurations.management import execute_from_command_line
 

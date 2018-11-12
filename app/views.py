@@ -23,6 +23,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import redirect, render
+from django.utils.timezone import now
 from django.views.decorators.cache import cache_control
 from django.conf import settings as django_settings
 
@@ -32,6 +33,7 @@ from app.forms import *
 from app.models import *
 import app.musicbrainz as mb
 from app.tools import arrange_for_table
+from app.tasks import check_releases
 
 
 def activate(request):
@@ -358,6 +360,7 @@ def index(request):
 
 @login_required
 def releases(request):
+    # check_releases.delay(now())
     PER_PAGE = 10
     limit = PER_PAGE + 1
     offset = int(request.GET.get('offset', 0))

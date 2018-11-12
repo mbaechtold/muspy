@@ -35,3 +35,16 @@ run `pytest -s`.
 
 Coverage report can be shown with `pytest --cov`. A HTML report can be generated with 
 `pytest --cov --cov-report=html`.
+
+
+## Celery
+
+Start worker and beat together (only suited for local development):
+
+    celery --app=app worker --loglevel=INFO --beat --scheduler=django_celery_beat.schedulers:DatabaseScheduler
+    
+Start worker and beat separately (on a production server):
+
+    celery --app=app worker --loglevel=INFO
+    
+    celery --app=app beat --loglevel=INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler
