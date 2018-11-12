@@ -14,9 +14,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
+import os
 
 from django.conf.urls import url
+from django.contrib import admin
 from django.contrib.auth.views import LoginView
+from django.urls import path
 from django.views.generic.base import RedirectView, TemplateView
 
 from app import views
@@ -51,6 +54,12 @@ urlpatterns = [
     url(r'^unsubscribe$', views.unsubscribe),
     url(r'blog|\.php', views.forbidden), # Hello, vulnerability scan bots!
 ]
+
+admin_url_path = os.environ.get('DJANGO_ADMIN_URL')
+if admin_url_path:
+    # Ensure a trailing slash.
+    admin_url_path = admin_url_path.strip("/") + "/"
+    urlpatterns += [path(admin_url_path, admin.site.urls)]
 
 
 # "django-piston" relies on "django.utils.simplejson", which has been removed in Django 1.5.
