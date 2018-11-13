@@ -22,7 +22,6 @@ from app.tools import check_password
 
 
 class EmailAuthBackend(ModelBackend):
-
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
             user = User.objects.get(email=username)

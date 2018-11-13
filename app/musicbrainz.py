@@ -23,13 +23,14 @@ from xml.etree import ElementTree as et
 
 setdefaulttimeout(10)
 
+
 def search_artists(query, limit, offset):
     # Escape Lucene special characters.
     special = '\\+-&|!(){}[]^"~*?:'
     for c in special:
-        query = query.replace(c, '\\' + c)
+        query = query.replace(c, "\\" + c)
     try:
-        xml = _fetch('artist', query=query, limit=limit, offset=offset)
+        xml = _fetch("artist", query=query, limit=limit, offset=offset)
     except:
         return None, 0
 
@@ -37,19 +38,20 @@ def search_artists(query, limit, offset):
     if root is None:
         return [], 0
 
-    artist_list = root.find('%sartist-list' % ns)
+    artist_list = root.find("%sartist-list" % ns)
     if artist_list is None:
         return [], 0
 
-    count = int(artist_list.get('count'))
-    artists = [_parse_artist(element, ns) 
-               for element 
-               in root.findall('%sartist-list/%sartist' % (ns, ns))]
+    count = int(artist_list.get("count"))
+    artists = [
+        _parse_artist(element, ns) for element in root.findall("%sartist-list/%sartist" % (ns, ns))
+    ]
     return artists, count
+
 
 def get_artist(mbid):
     try:
-        xml = _fetch('artist', mbid=mbid)
+        xml = _fetch("artist", mbid=mbid)
     except HTTPError as e:
         if e.code == 404:
             return []
@@ -61,11 +63,12 @@ def get_artist(mbid):
     if root is None:
         return None
 
-    return _parse_artist(root.find('%sartist' % ns), ns)
+    return _parse_artist(root.find("%sartist" % ns), ns)
+
 
 def get_release_groups(mbid, limit, offset=0):
     try:
-        xml = _fetch('release-group', artist=mbid, limit=limit, offset=offset)
+        xml = _fetch("release-group", artist=mbid, limit=limit, offset=offset)
     except HTTPError as e:
         if e.code == 404:
             return []
@@ -77,14 +80,16 @@ def get_release_groups(mbid, limit, offset=0):
     if root is None or ns is None:
         return []
 
-    return [_parse_release_group(element, ns)
-            for element
-            in root.findall('%srelease-group-list/%srelease-group' % (ns, ns))]
+    return [
+        _parse_release_group(element, ns)
+        for element in root.findall("%srelease-group-list/%srelease-group" % (ns, ns))
+    ]
+
 
 def get_releases(mbid, limit, offset=0):
     try:
-        kw = {'release-group': mbid, 'limit': limit, 'offset': offset}
-        xml = _fetch('release', **kw)
+        kw = {"release-group": mbid, "limit": limit, "offset": offset}
+        xml = _fetch("release", **kw)
     except:
         return None
 
@@ -92,52 +97,58 @@ def get_releases(mbid, limit, offset=0):
     if root is None or ns is None:
         return []
 
-    return [_parse_release(element, ns)
-            for element
-            in root.findall('%srelease-list/%srelease' % (ns, ns))]
+    return [
+        _parse_release(element, ns)
+        for element in root.findall("%srelease-list/%srelease" % (ns, ns))
+    ]
+
 
 def _fetch(resource, mbid=None, **kw):
-    url = 'http://musicbrainz.org/ws/2/'
-    url += resource + '/'
-    if mbid: 
+    url = "http://musicbrainz.org/ws/2/"
+    url += resource + "/"
+    if mbid:
         url += mbid
-    url += '?' + urlencode(kw)
+    url += "?" + urlencode(kw)
 
-    request = Request(url, headers = {'User-Agent': 'muspy/2.0'})
+    request = Request(url, headers={"User-Agent": "muspy/2.0"})
     response = urlopen(request)
     return response.read()
+
 
 def _parse_root(xml):
     try:
         root = et.fromstring(xml)
-        ns = root.tag[:root.tag.find('metadata')]
+        ns = root.tag[: root.tag.find("metadata")]
         return root, ns
     except:
         return None, None
 
+
 def _parse_artist(element, ns):
     d = {}
-    d['id'] = element.get('id').lower()
+    d["id"] = element.get("id").lower()
     for attr in element.attrib:
-        if attr.endswith('score'):
-            d['score'] = element.get(attr)
-            d['best_match'] = d['score'] in ('100', '99')
+        if attr.endswith("score"):
+            d["score"] = element.get(attr)
+            d["best_match"] = d["score"] in ("100", "99")
             break
     for prop in element:
-        d[prop.tag[len(ns):]] = prop.text
+        d[prop.tag[len(ns) :]] = prop.text
     return d
+
 
 def _parse_release_group(element, ns):
     d = {}
-    d['id'] = element.get('id').lower()
-    d['type'] = element.get('type')
+    d["id"] = element.get("id").lower()
+    d["type"] = element.get("type")
     for prop in element:
-        d[prop.tag[len(ns):]] = prop.text
+        d[prop.tag[len(ns) :]] = prop.text
     return d
+
 
 def _parse_release(element, ns):
     d = {}
-    d['id'] = element.get('id').lower()
+    d["id"] = element.get("id").lower()
     for prop in element:
-        d[prop.tag[len(ns):]] = prop.text
+        d[prop.tag[len(ns) :]] = prop.text
     return d

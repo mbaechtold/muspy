@@ -24,13 +24,12 @@ from django.conf import settings
 
 
 def has_user(username):
-    return get_artists(username, 'overall', 1, 1) != None
+    return get_artists(username, "overall", 1, 1) != None
+
 
 def get_artists(username, period, limit, page):
     try:
-        xml = _fetch(
-            'user.getTopArtists', user=username,
-            period=period, limit=limit, page=page)
+        xml = _fetch("user.getTopArtists", user=username, period=period, limit=limit, page=page)
     except:
         return None
 
@@ -39,46 +38,49 @@ def get_artists(username, period, limit, page):
     except:
         return []
 
-    if not 'status' in root.attrib or root.get('status') != 'ok':
+    if not "status" in root.attrib or root.get("status") != "ok":
         return None
 
-    artists = root.find('topartists')
-    if artists is None or int(artists.get('page')) != page:
+    artists = root.find("topartists")
+    if artists is None or int(artists.get("page")) != page:
         return []
 
-    artists = [_parse_artist(element) for element in root.findall('topartists/artist')]
-    return [artist for artist in artists if 'name' in artist or 'mbid' in artist]
+    artists = [_parse_artist(element) for element in root.findall("topartists/artist")]
+    return [artist for artist in artists if "name" in artist or "mbid" in artist]
+
 
 def get_cover_urls(artist, album):
     # Remove the trailing ' (X)' from the album.
-    album = re.sub(r'(^.+)\s+\([^\)]+\)$', r'\1', album)
+    album = re.sub(r"(^.+)\s+\([^\)]+\)$", r"\1", album)
     try:
-        xml = _fetch('album.getInfo', artist=artist, album=album)
+        xml = _fetch("album.getInfo", artist=artist, album=album)
     except:
         return None
 
     pattern = r'<image size="%s">(?P<url>[^<]+)</image>'
     res = []
-    for size in ('large', 'extralarge', 'mega'):
+    for size in ("large", "extralarge", "mega"):
         match = re.search(pattern % size, xml)
         if match:
-            res.append(match.group('url'))
+            res.append(match.group("url"))
 
     return res
 
-def _fetch(method, **kw):
-    url = 'http://ws.audioscrobbler.com/2.0/'
-    params = {'method': method, 'api_key': settings.LASTFM_API_KEY}
-    params.update(kw)
-    url += '?' + urlencode(params)
 
-    request = Request(url, headers = {'User-Agent': 'muspy/2.0'})
+def _fetch(method, **kw):
+    url = "http://ws.audioscrobbler.com/2.0/"
+    params = {"method": method, "api_key": settings.LASTFM_API_KEY}
+    params.update(kw)
+    url += "?" + urlencode(params)
+
+    request = Request(url, headers={"User-Agent": "muspy/2.0"})
     response = urlopen(request)
     return response.read().decode()
+
 
 def _parse_artist(element):
     d = {}
     for prop in element.getchildren():
-        if prop.tag in ('name', 'mbid'):
+        if prop.tag in ("name", "mbid"):
             d[prop.tag] = prop.text
     return d

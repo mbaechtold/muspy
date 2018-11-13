@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+
 def arrange_for_table(items, columns):
     """Prepare a list of items to show it in a table.
 
@@ -28,12 +29,22 @@ def arrange_for_table(items, columns):
     L = len(items)
     N = columns
     M = 1 + (L - 1) // N
-    return [[items[i + j * M -
-                   # Next line compensates for empty cells in the last row.
-                   max(0, j - L % N  if i < M - 1 and L % N else 0)]
-             if i * N + j < L else None
-             for j in range(N)]
-            for i in range(M)]
+    return [
+        [
+            items[
+                i
+                + j * M
+                -
+                # Next line compensates for empty cells in the last row.
+                max(0, j - L % N if i < M - 1 and L % N else 0)
+            ]
+            if i * N + j < L
+            else None
+            for j in range(N)
+        ]
+        for i in range(M)
+    ]
+
 
 def str_to_date(date_str):
     """ Convert a date string into int
@@ -60,6 +71,7 @@ def str_to_date(date_str):
     date += int(day)
     return date
 
+
 def date_to_str(date):
     """ Reverse of str_to_date() """
 
@@ -68,10 +80,11 @@ def date_to_str(date):
     day = date % 100
     date_str = str(year)
     if month:
-        date_str += '-%02d' % month
+        date_str += "-%02d" % month
         if day:
-            date_str += '-%02d'% day
+            date_str += "-%02d" % day
     return date_str
+
 
 def date_to_iso8601(date):
     """ Int date to ISO 8601 string
@@ -86,16 +99,18 @@ def date_to_iso8601(date):
     day = date % 100
     return "%04d-%02d-%02dT00:00:00Z" % (year, month or 1, day or 1)
 
+
 def check_password(user, password):
     # Legacy users have their passwords hashed with SHA512.
     # TODO: Remove when Django supports SHA512 (1.4?)
-    if user.password.startswith('sha512$'):
+    if user.password.startswith("sha512$"):
         import hashlib
         from django.utils.crypto import constant_time_compare
         from django.utils.encoding import smart_str
-        algo, salt, hsh = user.password.split('$')
+
+        algo, salt, hsh = user.password.split("$")
         password, salt = smart_str(password), smart_str(salt)
-        hash = hashlib.new('sha512')
+        hash = hashlib.new("sha512")
         hash.update(password)
         hash.update(salt)
         hexdigest = hash.hexdigest()

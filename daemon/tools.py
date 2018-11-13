@@ -29,13 +29,14 @@ def sleep():
     # Don't keep an open database connection while sleeping.
     connection.close()
 
-    if os.environ.get('TESTING'):
+    if os.environ.get("TESTING"):
         time.sleep(2)
     else:
-        DELAY = 2 # seconds
+        DELAY = 2  # seconds
         duration = time.time() - sleep.start
         if DELAY - duration > 0:
             time.sleep(DELAY - duration)
         sleep.start = time.time()
+
 
 sleep.start = time.time()

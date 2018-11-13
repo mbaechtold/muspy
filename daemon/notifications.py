@@ -33,7 +33,7 @@ def send():
         try:
             notification = Notification.objects.all()[0]
         except IndexError:
-            break # last one
+            break  # last one
 
         with transaction.atomic():
             user = notification.user
@@ -44,17 +44,18 @@ def send():
                 if rg.type in types and is_recent(rg.date):
                     sleep = True
                     result = user.profile.send_email(
-                        subject='[muspy] New Release: %s - %s' % (rg.artist.name, rg.name),
-                        text_template='email/release.txt',
-                        html_template='email/release.html',
+                        subject="[muspy] New Release: %s - %s" % (rg.artist.name, rg.name),
+                        text_template="email/release.txt",
+                        html_template="email/release.html",
                         release=rg,
                         username=user.username,
-                        root='https://muspy.com/')
+                        root="https://muspy.com/",
+                    )
                     if not result:
-                        logging.warning('Could not send to user %d, retrying' % user.id)
+                        logging.warning("Could not send to user %d, retrying" % user.id)
                         continue
                     sent_emails += 1
-                    logging.info('Sent a notification to user %d' % user.id)
+                    logging.info("Sent a notification to user %d" % user.id)
 
             notification.delete()
 
@@ -63,9 +64,6 @@ def send():
 
 def is_recent(date):
     """Check if the integer date is not older than one year."""
-    date = datetime(
-        year=date // 10000,
-        month=(date // 100) % 100 or 1,
-        day=date % 100 or 1)
+    date = datetime(year=date // 10000, month=(date // 100) % 100 or 1, day=date % 100 or 1)
     one_year = timedelta(weeks=52)
     return date > datetime.utcnow() - one_year

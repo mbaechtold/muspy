@@ -21,21 +21,21 @@ import time
 
 class Cover(object):
 
-    DELAY = 7 * 24 * 60 * 60 # 7 days
+    DELAY = 7 * 24 * 60 * 60  # 7 days
 
     def __init__(self, mbid, image=None):
-        self._base = os.path.abspath(os.path.dirname(__file__) + '/..')
-        self._default = os.path.join(self._base, 'static', 'cover.jpg')
+        self._base = os.path.abspath(os.path.dirname(__file__) + "/..")
+        self._default = os.path.join(self._base, "static", "cover.jpg")
         self.found = False
         if len(mbid) != 36:
             self.found = True
             self.image = self._read(self._default)
             return
 
-        self._path = os.path.join(self._base, 'covers', mbid[0:2], mbid[2:4], mbid + '.jpg')
+        self._path = os.path.join(self._base, "covers", mbid[0:2], mbid[2:4], mbid + ".jpg")
         if image:
             self._create_dirs()
-            with open(self._path, 'wb') as f:
+            with open(self._path, "wb") as f:
                 f.write(image)
             self.found = True
             self.image = image
@@ -58,12 +58,12 @@ class Cover(object):
 
         # Create an empty file.
         self._create_dirs()
-        f = open(self._path, 'wb')
+        f = open(self._path, "wb")
         f.close()
         self.image = self._read(self._default)
 
     def _read(self, path):
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             return f.read()
 
     def _create_dirs(self):

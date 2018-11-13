@@ -22,7 +22,7 @@ from piston.authentication import HttpBasicAuthentication
 from api.handlers import *
 
 
-auth = {'authentication': HttpBasicAuthentication(realm="api")}
+auth = {"authentication": HttpBasicAuthentication(realm="api")}
 
 artist_handler = ApiResource(handler=ArtistHandler)
 artists_handler = ApiResource(handler=ArtistsHandler, **auth)
@@ -30,10 +30,11 @@ release_handler = ApiResource(handler=ReleaseHandler)
 releases_handler = ApiResource(handler=ReleasesHandler)
 user_handler = ApiResource(handler=UserHandler, **auth)
 
-urlpatterns = patterns('',
-    (r'artist/(?P<mbid>[0-9a-f\-]{36})', artist_handler),
-    (r'artists/(?P<userid>[0-9a-z]{30})(/(?P<mbid>[0-9a-f\-]{36}))?', artists_handler),
-    (r'release/(?P<mbid>[0-9a-f\-]{36})', release_handler),
-    (r'releases(/(?P<userid>[0-9a-z]{30}))?', releases_handler),
-    (r'user(/(?P<userid>[0-9a-z]{30}))?', user_handler),
+urlpatterns = patterns(
+    "",
+    (r"artist/(?P<mbid>[0-9a-f\-]{36})", artist_handler),
+    (r"artists/(?P<userid>[0-9a-z]{30})(/(?P<mbid>[0-9a-f\-]{36}))?", artists_handler),
+    (r"release/(?P<mbid>[0-9a-f\-]{36})", release_handler),
+    (r"releases(/(?P<userid>[0-9a-z]{30}))?", releases_handler),
+    (r"user(/(?P<userid>[0-9a-z]{30}))?", user_handler),
 )

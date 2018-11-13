@@ -3,11 +3,13 @@ from __future__ import absolute_import, unicode_literals
 import logging
 
 from celery import shared_task
+
 # from celery.contrib import rdb
 from celery.utils.log import get_task_logger
 
 celery_logger = get_task_logger(__name__)
 logger = logging.getLogger("app")
+
 
 @shared_task()
 def check_releases(itze):

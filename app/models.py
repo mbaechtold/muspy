@@ -40,34 +40,38 @@ class Artist(models.Model):
     name = models.CharField(max_length=512)
     sort_name = models.CharField(max_length=512)
     disambiguation = models.CharField(max_length=512)
-    users = models.ManyToManyField(User, through='UserArtist')
+    users = models.ManyToManyField(User, through="UserArtist")
 
     blacklisted = [
-        '89ad4ac3-39f7-470e-963a-56509c546377', # Various Artists
-        'fe5b7087-438f-4e7e-afaf-6d93c8c888b2',
-        '0677ef60-6be5-4e36-9d1e-8bb2bf85b981',
-        'b7c7dfd9-d735-4733-9b10-f060ac75bd6a',
-        'b05cc773-4e8e-40bc-ae12-dc88dfc2c9ec',
-        '4b2228f5-e18b-4acc-ace7-b8db13a9306f',
-        '046c889d-5b1c-4f54-9c7b-319a8f67e729',
-        '1bf34db2-8447-4ecd-9b25-57945b28ef28',
-        '023671ff-b1ad-4133-a4f3-aadaaadfd2e0',
-        'f731ccc4-e22a-43af-a747-64213329e088', # [anonymous]
-        '33cf029c-63b0-41a0-9855-be2a3665fb3b', # [data]
-        '314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc', # [dialogue]
-        'eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61', # [no artist]
-        '9be7f096-97ec-4615-8957-8d40b5dcbc41', # [traditional]
-        '125ec42a-7229-4250-afc5-e057484327fe', # [unknown]
-        '203b6058-2401-4bf0-89e3-8dc3d37c3f12',
-        '5e760f5a-ea55-4b53-a18f-021c0d9779a6',
-        '1d8bc797-ec8a-40d2-8d80-b1346b56a65f',
-        '7734d67f-44d9-4ba2-91e3-9b067263210e',
-        'f49cc9f4-dc00-48ab-9aab-6387c02738cf',
-        '0035056d-72ac-41fa-8ea6-0e27e55f42f7',
-        'd6bd72bc-b1e2-4525-92aa-0f853cbb41bf', # [soundtrack]
-        ]
-    class Blacklisted(Exception): pass
-    class Unknown(Exception): pass
+        "89ad4ac3-39f7-470e-963a-56509c546377",  # Various Artists
+        "fe5b7087-438f-4e7e-afaf-6d93c8c888b2",
+        "0677ef60-6be5-4e36-9d1e-8bb2bf85b981",
+        "b7c7dfd9-d735-4733-9b10-f060ac75bd6a",
+        "b05cc773-4e8e-40bc-ae12-dc88dfc2c9ec",
+        "4b2228f5-e18b-4acc-ace7-b8db13a9306f",
+        "046c889d-5b1c-4f54-9c7b-319a8f67e729",
+        "1bf34db2-8447-4ecd-9b25-57945b28ef28",
+        "023671ff-b1ad-4133-a4f3-aadaaadfd2e0",
+        "f731ccc4-e22a-43af-a747-64213329e088",  # [anonymous]
+        "33cf029c-63b0-41a0-9855-be2a3665fb3b",  # [data]
+        "314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc",  # [dialogue]
+        "eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61",  # [no artist]
+        "9be7f096-97ec-4615-8957-8d40b5dcbc41",  # [traditional]
+        "125ec42a-7229-4250-afc5-e057484327fe",  # [unknown]
+        "203b6058-2401-4bf0-89e3-8dc3d37c3f12",
+        "5e760f5a-ea55-4b53-a18f-021c0d9779a6",
+        "1d8bc797-ec8a-40d2-8d80-b1346b56a65f",
+        "7734d67f-44d9-4ba2-91e3-9b067263210e",
+        "f49cc9f4-dc00-48ab-9aab-6387c02738cf",
+        "0035056d-72ac-41fa-8ea6-0e27e55f42f7",
+        "d6bd72bc-b1e2-4525-92aa-0f853cbb41bf",  # [soundtrack]
+    ]
+
+    class Blacklisted(Exception):
+        pass
+
+    class Unknown(Exception):
+        pass
 
     @classmethod
     def get_by_mbid(cls, mbid):
@@ -87,8 +91,11 @@ class Artist(models.Model):
             raise cls.Unknown
 
         artist = Artist(
-            mbid=mbid, name=artist_data['name'], sort_name=artist_data['sort-name'],
-            disambiguation=artist_data.get('disambiguation', ''))
+            mbid=mbid,
+            name=artist_data["name"],
+            sort_name=artist_data["sort-name"],
+            disambiguation=artist_data.get("disambiguation", ""),
+        )
         try:
             artist.save()
         except IntegrityError:
@@ -104,14 +111,15 @@ class Artist(models.Model):
             with transaction.atomic():
                 for rg_data in release_groups:
                     # Ignoring releases without a release date or a type.
-                    if rg_data.get('first-release-date') and rg_data.get('type'):
+                    if rg_data.get("first-release-date") and rg_data.get("type"):
                         release_group = ReleaseGroup(
                             artist=artist,
-                            mbid=rg_data['id'],
-                            name=rg_data['title'],
-                            type=rg_data['type'],
-                            date=str_to_date(rg_data['first-release-date']),
-                            is_deleted=False)
+                            mbid=rg_data["id"],
+                            name=rg_data["title"],
+                            type=rg_data["type"],
+                            date=str_to_date(rg_data["first-release-date"]),
+                            is_deleted=False,
+                        )
                         release_group.save()
 
         if release_groups is None or len(release_groups) == LIMIT:
@@ -123,7 +131,7 @@ class Artist(models.Model):
     @classmethod
     def get_by_user(cls, user):
         # TODO: paging
-        return cls.objects.filter(users=user).order_by('sort_name')[:4000]
+        return cls.objects.filter(users=user).order_by("sort_name")[:4000]
 
 
 class Job(models.Model):
@@ -153,7 +161,7 @@ class Job(models.Model):
 
     @classmethod
     def import_lastfm(cls, user, username, count, period):
-        data = str(count) + ',' + period + ',' + username
+        data = str(count) + "," + period + "," + username
         cls(user=user, type=cls.IMPORT_LASTFM, data=data).save()
 
     @classmethod
@@ -169,13 +177,12 @@ class Job(models.Model):
 
 
 class Notification(models.Model):
-
     class Meta:
-        db_table = 'app_notification'
-        unique_together = ('user', 'release_group')
+        db_table = "app_notification"
+        unique_together = ("user", "release_group")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    release_group = models.ForeignKey('ReleaseGroup', on_delete=models.CASCADE)
+    release_group = models.ForeignKey("ReleaseGroup", on_delete=models.CASCADE)
 
 
 class ReleaseGroup(models.Model):
@@ -186,20 +193,23 @@ class ReleaseGroup(models.Model):
     table and group by mbid as needed.
 
     """
+
     class Meta:
-        unique_together = ('artist', 'mbid')
+        unique_together = ("artist", "mbid")
 
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     mbid = models.CharField(max_length=36)
     name = models.CharField(max_length=512)
     type = models.CharField(max_length=16)
-    date = models.IntegerField() # 20080101 OR 20080100 OR 20080000
+    date = models.IntegerField()  # 20080101 OR 20080100 OR 20080000
     is_deleted = models.BooleanField()
 
     users_who_starred = models.ManyToManyField(
-        User, through='Star', related_name='starred_release_groups')
+        User, through="Star", related_name="starred_release_groups"
+    )
     users_to_notify = models.ManyToManyField(
-        User, through='Notification', related_name='new_release_groups')
+        User, through="Notification", related_name="new_release_groups"
+    )
 
     def date_str(self):
         return date_to_str(self.date)
@@ -210,19 +220,23 @@ class ReleaseGroup(models.Model):
     @classmethod
     def get(cls, artist=None, user=None, limit=0, offset=0, feed=False):
         if not artist and not user:
-            assert 'Both artist and user are None'
+            assert "Both artist and user are None"
             return None
 
-        queryset = cls.objects.exclude(is_deleted=True).order_by('-date')
+        queryset = cls.objects.exclude(is_deleted=True).order_by("-date")
 
         if artist:
             queryset = queryset.filter(artist=artist)
 
         if user:
             # Only include release of artists the user is following.
-            queryset = queryset.filter(artist_id__in=Subquery(
-                UserArtist.objects.filter(user=user).filter(artist_id=OuterRef('artist_id')).values("artist_id"),
-            ))
+            queryset = queryset.filter(
+                artist_id__in=Subquery(
+                    UserArtist.objects.filter(user=user)
+                    .filter(artist_id=OuterRef("artist_id"))
+                    .values("artist_id")
+                )
+            )
 
             # Only include release types the user has configured in the settings.
             profile = user.profile
@@ -240,36 +254,40 @@ class ReleaseGroup(models.Model):
             queryset = queryset.annotate(
                 is_starred=Coalesce(
                     Subquery(
-                        Star.objects.filter(release_group_id=OuterRef('id')).filter(user=user).values('id'),
-                    ), 0
+                        Star.objects.filter(release_group_id=OuterRef("id"))
+                        .filter(user=user)
+                        .values("id")
+                    ),
+                    0,
                 )
             )
-            queryset = queryset.order_by('-is_starred', '-date')
+            queryset = queryset.order_by("-is_starred", "-date")
 
-        return queryset[offset: offset + limit]
+        return queryset[offset : offset + limit]
 
     @classmethod
     def get_calendar(cls, date, limit, offset):
         """Returns the list of release groups for the date."""
         q = cls.objects.filter(date__lte=date)
-        q = q.select_related('artist')
+        q = q.select_related("artist")
         # Calendar uses the same template as releases, adapt to conform.
-        q = q.extra(select={
-                'artist_mbid': '"app_artist"."mbid"',
-                'artist_name': '"app_artist"."name"',
-                'artist_sort_name': '"app_artist"."sort_name"',
-                'artist_disambiguation': '"app_artist"."disambiguation"',
-                })
+        q = q.extra(
+            select={
+                "artist_mbid": '"app_artist"."mbid"',
+                "artist_name": '"app_artist"."name"',
+                "artist_sort_name": '"app_artist"."sort_name"',
+                "artist_disambiguation": '"app_artist"."disambiguation"',
+            }
+        )
         q = q.filter(is_deleted=False)
-        q = q.order_by('-date')
-        return q[offset:offset+limit]
+        q = q.order_by("-date")
+        return q[offset : offset + limit]
 
 
 class Star(models.Model):
-
     class Meta:
-        db_table = 'app_star'
-        unique_together = ('user', 'release_group')
+        db_table = "app_star"
+        unique_together = ("user", "release_group")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     release_group = models.ForeignKey(ReleaseGroup, on_delete=models.CASCADE)
@@ -287,9 +305,8 @@ class Star(models.Model):
 
 
 class UserArtist(models.Model):
-
     class Meta:
-        unique_together = ('user', 'artist')
+        unique_together = ("user", "artist")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
@@ -323,7 +340,7 @@ class UserProfile(models.Model):
 
     code_length = 16
 
-    user = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
 
     notify = models.BooleanField(default=True)
     notify_album = models.BooleanField(default=True)
@@ -341,19 +358,25 @@ class UserProfile(models.Model):
     def get_types(self):
         """Return the list of release types the user wants to follow."""
         types = []
-        if self.notify_album: types.append('Album')
-        if self.notify_single: types.append('Single')
-        if self.notify_ep: types.append('EP')
-        if self.notify_live: types.append('Live')
-        if self.notify_compilation: types.append('Compilation')
-        if self.notify_remix: types.append('Remix')
+        if self.notify_album:
+            types.append("Album")
+        if self.notify_single:
+            types.append("Single")
+        if self.notify_ep:
+            types.append("EP")
+        if self.notify_live:
+            types.append("Live")
+        if self.notify_compilation:
+            types.append("Compilation")
+        if self.notify_remix:
+            types.append("Remix")
         if self.notify_other:
-            types.extend(['Soundtrack', 'Spokenword', 'Interview', 'Audiobook', 'Other'])
+            types.extend(["Soundtrack", "Spokenword", "Interview", "Audiobook", "Other"])
         return types
 
     def generate_code(self):
-        code_chars = '23456789abcdefghijkmnpqrstuvwxyz'
-        return ''.join(random.choice(code_chars) for i in range(UserProfile.code_length))
+        code_chars = "23456789abcdefghijkmnpqrstuvwxyz"
+        return "".join(random.choice(code_chars) for i in range(UserProfile.code_length))
 
     def purge(self):
         user = self.user
@@ -366,16 +389,16 @@ class UserProfile(models.Model):
             self.delete()
             # Cannot call user.delete() because it references deprecated auth_message.
             cursor = connection.cursor()
-            cursor.execute('DELETE FROM auth_user WHERE id=%s', [user.id])
+            cursor.execute("DELETE FROM auth_user WHERE id=%s", [user.id])
 
     def send_email(self, subject, text_template, html_template, **kwds):
         text = render_to_string(text_template, kwds)
         msg = EmailMultiAlternatives(
             subject,
             text,
-            'bounces@muspy.com',
+            "bounces@muspy.com",
             [self.user.email],
-            headers={'From': 'muspy.com <info@muspy.com>'},
+            headers={"From": "muspy.com <info@muspy.com>"},
         )
         if html_template:
             html = render_to_string(html_template, kwds)
@@ -391,20 +414,22 @@ class UserProfile(models.Model):
         self.activation_code = code
         self.save()
         self.send_email(
-            subject='Email Activation',
-            text_template='email/activate.txt',
+            subject="Email Activation",
+            text_template="email/activate.txt",
             html_template=None,
-            code=code)
+            code=code,
+        )
 
     def send_reset_email(self):
         code = self.generate_code()
         self.reset_code = code
         self.save()
         self.send_email(
-            subject='Password Reset Confirmation',
-            text_template='email/reset.txt',
+            subject="Password Reset Confirmation",
+            text_template="email/reset.txt",
             html_template=None,
-            code=code)
+            code=code,
+        )
 
     def unsubscribe(self):
         self.notify = False
@@ -416,7 +441,7 @@ class UserProfile(models.Model):
         if not profiles:
             return False
         profile = profiles[0]
-        profile.activation_code = ''
+        profile.activation_code = ""
         profile.email_activated = True
         profile.save()
         return True
@@ -428,7 +453,7 @@ class UserProfile(models.Model):
             return None, None
         profile = profiles[0]
         password = User.objects.make_random_password(length=16)
-        profile.reset_code = ''
+        profile.reset_code = ""
         profile.user.set_password(password)
         with transaction.atomic():
             profile.user.save()
@@ -465,7 +490,7 @@ class UserProfile(models.Model):
     @classmethod
     def create_user(cls, email, password):
         chars = string.ascii_lowercase + string.digits
-        username = ''.join(random.choice(chars) for i in range(30))
+        username = "".join(random.choice(chars) for i in range(30))
         return User.objects.create_user(username, email, password)
 
 
@@ -488,9 +513,9 @@ class UserSearch(models.Model):
 # Activate foreign keys for sqlite.
 @receiver(connection_created)
 def activate_foreign_keys(sender, connection, **kwargs):
-    if connection.vendor == 'sqlite':
+    if connection.vendor == "sqlite":
         cursor = connection.cursor()
-        cursor.execute('PRAGMA foreign_keys=1;')
+        cursor.execute("PRAGMA foreign_keys=1;")
 
 
 # Create a profile for each user.

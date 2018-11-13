@@ -9,4 +9,4 @@ from .celery import app as muspy
 #
 #    celery --app=app worker
 #
-__all__ = ['muspy']
+__all__ = ["muspy"]

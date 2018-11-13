@@ -82,15 +82,14 @@ class SentryMixin(object):
 
 
 class CeleryMixin:
-
     @property
     def CELERY_BROKER_URL(self):
-        return os.environ.get('CELERY_BROKER_URL', 'redis://localhost:6379')
+        return os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379")
 
     @property
     def INSTALLED_APPS(self):
         installed_apps = super().INSTALLED_APPS
-        return installed_apps + ['django_celery_beat']
+        return installed_apps + ["django_celery_beat"]
 
     CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
@@ -111,42 +110,40 @@ class Base(Configuration):
 
     SECRET_KEY = values.Value("change me")
 
-    SERVER_EMAIL = 'info@localhost'
+    SERVER_EMAIL = "info@localhost"
 
-    email_config = dj_email_url.config(default='console://localhost:1025')
+    email_config = dj_email_url.config(default="console://localhost:1025")
 
-    EMAIL_FILE_PATH = email_config['EMAIL_FILE_PATH']
-    EMAIL_HOST_USER = email_config['EMAIL_HOST_USER']
-    EMAIL_HOST_PASSWORD = email_config['EMAIL_HOST_PASSWORD']
-    EMAIL_HOST = email_config['EMAIL_HOST']
-    EMAIL_PORT = email_config['EMAIL_PORT']
-    EMAIL_BACKEND = email_config['EMAIL_BACKEND']
-    EMAIL_USE_TLS = email_config['EMAIL_USE_TLS']
-    EMAIL_USE_SSL = email_config['EMAIL_USE_SSL']
+    EMAIL_FILE_PATH = email_config["EMAIL_FILE_PATH"]
+    EMAIL_HOST_USER = email_config["EMAIL_HOST_USER"]
+    EMAIL_HOST_PASSWORD = email_config["EMAIL_HOST_PASSWORD"]
+    EMAIL_HOST = email_config["EMAIL_HOST"]
+    EMAIL_PORT = email_config["EMAIL_PORT"]
+    EMAIL_BACKEND = email_config["EMAIL_BACKEND"]
+    EMAIL_USE_TLS = email_config["EMAIL_USE_TLS"]
+    EMAIL_USE_SSL = email_config["EMAIL_USE_SSL"]
 
     LASTFM_API_KEY = values.Value("change me", environ_prefix="")
 
     ########################################################################
 
-    ADMINS = (('admin', 'info@localhost'),)
+    ADMINS = (("admin", "info@localhost"),)
     MANAGERS = ADMINS
     SEND_BROKEN_LINK_EMAILS = True
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-    DATABASES = {
-        'default': dj_database_url.config(default='sqlite:///db/muspy.db')
-    }
+    DATABASES = {"default": dj_database_url.config(default="sqlite:///db/muspy.db")}
 
     USE_TZ = True
-    TIME_ZONE = 'UTC'
+    TIME_ZONE = "UTC"
     USE_I18N = False
-    LOGIN_REDIRECT_URL = '/artists'
-    LOGIN_URL = '/signin'
-    AUTH_PROFILE_MODULE = 'app.UserProfile'
-    MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
-    ROOT_URLCONF = 'urls'
-    EMAIL_SUBJECT_PREFIX = '[muspy] '
+    LOGIN_REDIRECT_URL = "/artists"
+    LOGIN_URL = "/signin"
+    AUTH_PROFILE_MODULE = "app.UserProfile"
+    MESSAGE_STORAGE = "django.contrib.messages.storage.cookie.CookieStorage"
+    ROOT_URLCONF = "urls"
+    EMAIL_SUBJECT_PREFIX = "[muspy] "
     TEMPLATES = [
         {
             "APP_DIRS": True,
@@ -155,46 +152,46 @@ class Base(Configuration):
             "OPTIONS": {
                 "debug": DEBUG,
                 "context_processors": [
-                    'django.contrib.auth.context_processors.auth',
-                    'django.contrib.messages.context_processors.messages',
-                    'django.template.context_processors.csrf',
-                    'django.template.context_processors.debug',
-                    'django.template.context_processors.request',
-                ]
-            }
+                    "django.contrib.auth.context_processors.auth",
+                    "django.contrib.messages.context_processors.messages",
+                    "django.template.context_processors.csrf",
+                    "django.template.context_processors.debug",
+                    "django.template.context_processors.request",
+                ],
+            },
         }
     ]
-    AUTHENTICATION_BACKENDS = ('app.backends.EmailAuthBackend',)
+    AUTHENTICATION_BACKENDS = ("app.backends.EmailAuthBackend",)
     MIDDLEWARE = [
-        'django.middleware.common.CommonMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
+        "django.middleware.common.CommonMiddleware",
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
     ]
 
     INSTALLED_APPS = [
-        'django.contrib.admin',
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'django.contrib.messages',
-        'django.contrib.staticfiles',
-        'django.contrib.sites',
-        'django_extensions',
-        'storages',
-        'app.apps.MuspyApp',
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
+        "django.contrib.sites",
+        "django_extensions",
+        "storages",
+        "app.apps.MuspyApp",
     ]
 
     SITE_ID = 1
 
-    STATIC_URL = '/static/'
+    STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
     PASSWORD_HASHERS = [
-        'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-        'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-        'django.contrib.auth.hashers.SHA1PasswordHasher',
+        "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+        "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+        "django.contrib.auth.hashers.SHA1PasswordHasher",
     ]
 
     # fmt: off
@@ -253,24 +250,18 @@ class Base(Configuration):
 
 
 class Development(CeleryMixin, Base):
-    CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-        }
-    }
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
     CELERY_BROKER_POOL_LIMIT = 1
     CELERY_BROKER_CONNECTION_TIMEOUT = 10
     CELERY_IGNORE_RESULT = False
     CELERY_TASK_RESULT_EXPIRES = 600
 
 
-class Production(SentryMixin, CeleryMixin,  Base):
+class Production(SentryMixin, CeleryMixin, Base):
 
     DEBUG = False
 
-    ADMINS = (
-        ("admin", "muspy@baechtold.me"),
-    )
+    ADMINS = (("admin", "muspy@baechtold.me"),)
 
     SERVER_EMAIL = "muspy@baechtold.me"
 
@@ -293,9 +284,7 @@ class Production(SentryMixin, CeleryMixin,  Base):
 
     AWS_S3_ENDPOINT_URL = values.Value("https://ams3.digitaloceanspaces.com", environ_prefix="")
     AWS_S3_REGION_NAME = values.Value("ams3", environ_prefix="")
-    AWS_S3_OBJECT_PARAMETERS = {
-        "CacheControl": "max-age=86400",
-    }
+    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
     STATIC_URL = "https://%s/%s/" % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
     STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
