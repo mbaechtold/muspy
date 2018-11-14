@@ -22,6 +22,8 @@ from configurations import values
 import dj_database_url
 import dj_email_url
 
+from app.lastfm import get_lastfm_network
+
 
 class SentryMixin(object):
     SENTRY_DSN = values.Value("", environ_prefix="")
@@ -247,6 +249,10 @@ class Base(Configuration):
         },
     }
     # fmt: on
+
+    @property
+    def LASTFM_CLIENT(self):
+        return get_lastfm_network()
 
 
 class Development(CeleryMixin, Base):

@@ -14,13 +14,14 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
-
+import os
 import re
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 from xml.etree import ElementTree as et
 
 from django.conf import settings
+import pylast
 
 
 def has_user(username):
@@ -84,3 +85,20 @@ def _parse_artist(element):
         if prop.tag in ("name", "mbid"):
             d[prop.tag] = prop.text
     return d
+
+
+def get_lastfm_network():
+    """
+    Please don't use this directly. You can get the singleton Last.fm client from the
+    Django settings:
+
+        from django.conf import settings
+        client = settings.LASTFM_CLIENT
+    """
+
+    return pylast.LastFMNetwork(
+        api_key=os.environ.get("LASTFM_API_KEY", ""),
+        api_secret=os.environ.get("LASTFM_API_SECRET", ""),
+        username=os.environ.get("LASTFM_USERNAME", ""),
+        password_hash=pylast.md5(os.environ.get("LASTFM_PASSWORD", "")),
+    )

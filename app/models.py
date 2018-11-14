@@ -20,6 +20,7 @@ from smtplib import SMTPException
 import string
 from time import sleep
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.db import IntegrityError, connection, models, transaction
@@ -29,7 +30,10 @@ from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
+from pylast import WSError
+import requests
 
+from app.cover import Cover
 import app.musicbrainz as mb
 from app.tools import date_to_iso8601, date_to_str, str_to_date
 
@@ -203,6 +207,7 @@ class ReleaseGroup(models.Model):
     type = models.CharField(max_length=16)
     date = models.IntegerField()  # 20080101 OR 20080100 OR 20080000
     is_deleted = models.BooleanField()
+    cover_art_url = models.URLField(blank=True)
 
     users_who_starred = models.ManyToManyField(
         User, through="Star", related_name="starred_release_groups"
@@ -248,7 +253,7 @@ class ReleaseGroup(models.Model):
             if feed and profile.legacy_id:
                 # Don't include release groups added during the import
                 # TODO: Feel free to remove this check some time in 2013.
-                queryset = queryset.filter(is_gt=261202)
+                queryset = queryset.filter(is_gt=261_202)
 
             # Get the starred releases of the users. Starred releases will be shown before the other releases.
             queryset = queryset.annotate(
@@ -282,6 +287,44 @@ class ReleaseGroup(models.Model):
         q = q.filter(is_deleted=False)
         q = q.order_by("-date")
         return q[offset : offset + limit]
+
+    @property
+    def cover_url(self):
+        if self.cover_art_url:
+            return self.cover_art_url
+
+        fallback = "https://via.placeholder.com/250x250.png?text=NOT FOUND"
+
+        # Attempt 1: Get cover url from the Cover Art Archive
+        response = requests.get(
+            f"https://coverartarchive.org/release-group/{self.mbid}/front-250",
+            allow_redirects=False,
+        )
+        if response.status_code == 307:
+            cover_art_url = response.headers["Location"]
+            self.cover_art_url = cover_art_url
+            self.save()
+            return cover_art_url
+
+        # Attempt 2: Get the cover url from Last.fm
+        lastfm_client = settings.LASTFM_CLIENT
+        releases = mb.get_releases(self.mbid, limit=10)
+        for release in releases:
+            try:
+                album = lastfm_client.get_album_by_mbid(release["id"])
+            except WSError:
+                self.cover_art_url = fallback
+                self.save()
+                return fallback
+            cover_art_url = album.get_cover_image()
+            if cover_art_url:
+                self.cover_art_url = cover_art_url
+                self.save()
+                return cover_art_url
+
+        self.cover_art_url = fallback
+        self.save()
+        return fallback
 
 
 class Star(models.Model):

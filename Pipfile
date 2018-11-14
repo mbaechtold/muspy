@@ -29,6 +29,7 @@ celery = {version = "==4.2", extras = ["solar"]}
 django-celery-beat = {editable = true, git = "https://github.com/celery/django-celery-beat.git", ref = "eb8979e29bffb5a8c069a77f6c8a684dedbd2eb4"}
 redis = "==2.10.6"
 requests = "*"
+pylast = "*"
 
 [requires]
 python_version = "3.6"

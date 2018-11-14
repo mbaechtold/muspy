@@ -1,6 +1,6 @@
     {% load static %}
     <tr>
-        <td class="cover"><img src="/cover?id={{ release.mbid }}" width="120" height="120" alt="album cover"/></td>
+        <td class="cover"><img src="{{ release.cover_url }}" width="120" height="120" alt="album cover"/></td>
         <td class="release_info">
             <p>
             {% if show_stars %}
