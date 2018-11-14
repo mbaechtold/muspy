@@ -43,7 +43,7 @@ class Artist(models.Model):
     mbid = models.CharField(max_length=36, unique=True)
     name = models.CharField(max_length=512)
     sort_name = models.CharField(max_length=512)
-    disambiguation = models.CharField(max_length=512)
+    disambiguation = models.CharField(max_length=512, blank=True)
     users = models.ManyToManyField(User, through="UserArtist")
 
     blacklisted = [
@@ -70,6 +70,9 @@ class Artist(models.Model):
         "0035056d-72ac-41fa-8ea6-0e27e55f42f7",
         "d6bd72bc-b1e2-4525-92aa-0f853cbb41bf",  # [soundtrack]
     ]
+
+    def __str__(self):
+        return self.name
 
     class Blacklisted(Exception):
         pass
@@ -215,6 +218,9 @@ class ReleaseGroup(models.Model):
     users_to_notify = models.ManyToManyField(
         User, through="Notification", related_name="new_release_groups"
     )
+
+    def __str__(self):
+        return self.name
 
     def date_str(self):
         return date_to_str(self.date)

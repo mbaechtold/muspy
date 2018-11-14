@@ -11,6 +11,7 @@ class ReleaseGroupAdminInline(admin.TabularInline):
 class ArtistAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "mbid"]
     list_display_links = ["name"]
+    search_fields = ["name"]
     inlines = [ReleaseGroupAdminInline]
 
 
@@ -28,6 +29,7 @@ class NotificationAdmin(admin.ModelAdmin):
 class ReleaseGroupAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "mbid", "artist"]
     list_display_links = ["name"]
+    search_fields = ["name"]
 
 
 @admin.register(models.Star)
