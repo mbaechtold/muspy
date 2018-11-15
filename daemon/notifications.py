@@ -15,11 +15,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import datetime, timedelta
 import logging
+from datetime import datetime
+from datetime import timedelta
 
 from app.models import *
-from daemon import jobs, tools
+from daemon import jobs
+from daemon import tools
 
 
 def send():

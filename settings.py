@@ -17,10 +17,10 @@
 
 import os
 
-from configurations import Configuration
-from configurations import values
 import dj_database_url
 import dj_email_url
+from configurations import Configuration
+from configurations import values
 
 from app.lastfm import get_lastfm_network
 

@@ -17,11 +17,12 @@
 import os
 import re
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+from urllib.request import Request
+from urllib.request import urlopen
 from xml.etree import ElementTree as et
 
-from django.conf import settings
 import pylast
+from django.conf import settings
 
 
 def has_user(username):

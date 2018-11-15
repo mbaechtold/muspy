@@ -17,10 +17,8 @@
 
 from datetime import date
 
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-
-from piston.handler import AnonymousBaseHandler, BaseHandler
+from piston.handler import AnonymousBaseHandler
+from piston.handler import BaseHandler
 from piston.resource import Resource
 from piston.utils import rc
 

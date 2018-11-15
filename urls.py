@@ -20,10 +20,12 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.views import LoginView
 from django.urls import path
-from django.views.generic.base import RedirectView, TemplateView
+from django.views.generic.base import RedirectView
+from django.views.generic.base import TemplateView
 
 from app import views
 from app.forms import SignInForm
+
 
 urlpatterns = [
     url(r"^$", views.index),

@@ -18,14 +18,11 @@
 import datetime
 import logging
 
-from django.db import connection, transaction
-
-from django.conf import settings
-
 from app.models import *
-import app.musicbrainz as mb
 from app.tools import str_to_date
-from daemon import jobs, notifications, tools
+from daemon import jobs
+from daemon import notifications
+from daemon import tools
 
 
 def check():

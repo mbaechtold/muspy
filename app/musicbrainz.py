@@ -18,8 +18,10 @@
 from socket import setdefaulttimeout
 from urllib.error import HTTPError
 from urllib.parse import urlencode
-from urllib.request import Request, urlopen
+from urllib.request import Request
+from urllib.request import urlopen
 from xml.etree import ElementTree as et
+
 
 setdefaulttimeout(10)
 

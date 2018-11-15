@@ -16,26 +16,32 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
-from smtplib import SMTPException
 import string
+from smtplib import SMTPException
 from time import sleep
 
+import requests
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.db import IntegrityError, connection, models, transaction
+from django.db import connection
+from django.db import IntegrityError
+from django.db import models
+from django.db import transaction
 from django.db.backends.signals import connection_created
-from django.db.models import OuterRef, Subquery
+from django.db.models import OuterRef
+from django.db.models import Subquery
 from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from pylast import WSError
-import requests
 
-from app.cover import Cover
 import app.musicbrainz as mb
-from app.tools import date_to_iso8601, date_to_str, str_to_date
+from app.cover import Cover
+from app.tools import date_to_iso8601
+from app.tools import date_to_str
+from app.tools import str_to_date
 
 
 class Artist(models.Model):

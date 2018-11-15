@@ -16,7 +16,6 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 from django.conf.urls.defaults import *
-
 from piston.authentication import HttpBasicAuthentication
 
 from api.handlers import *

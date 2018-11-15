@@ -14,17 +14,16 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
-from io import BytesIO
 import logging
 import re
-from urllib.request import Request, urlopen
+from io import BytesIO
+from urllib.request import Request
+from urllib.request import urlopen
 
 from PIL import Image
 
 from app import lastfm
-from app.cover import Cover
 from app.models import *
-import app.musicbrainz as mb
 from app.tools import str_to_date
 from daemon import tools
 

@@ -16,24 +16,30 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 from calendar import monthrange
-from datetime import date, timedelta
+from datetime import date
+from datetime import timedelta
 
+from django.conf import settings as django_settings
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate
+from django.contrib.auth import login
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
-from django.shortcuts import redirect, render
+from django.http import HttpResponse
+from django.http import HttpResponseForbidden
+from django.http import HttpResponseNotFound
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.utils.timezone import now
 from django.views.decorators.cache import cache_control
-from django.conf import settings as django_settings
 
+import app.musicbrainz as mb
 from app import lastfm
 from app.cover import Cover
 from app.forms import *
 from app.models import *
-import app.musicbrainz as mb
-from app.tools import arrange_for_table
 from app.tasks import check_releases
+from app.tools import arrange_for_table
 
 
 def activate(request):
