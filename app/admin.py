@@ -18,36 +18,37 @@ class ArtistAdmin(admin.ModelAdmin):
 
 @admin.register(models.Job)
 class JobAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["pk", "user", "type"]
 
 
 @admin.register(models.Notification)
 class NotificationAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["pk", "user", "release_group"]
 
 
 @admin.register(models.ReleaseGroup)
 class ReleaseGroupAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "mbid", "artist"]
     list_display_links = ["name"]
+    list_filter = ["is_deleted", "type"]
     search_fields = ["name"]
 
 
 @admin.register(models.Star)
 class StarAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["pk", "user", "release_group"]
 
 
 @admin.register(models.UserArtist)
 class UserArtistAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["pk", "user", "artist", "date"]
 
 
 @admin.register(models.UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["pk", "user", "email_activated"]
 
 
 @admin.register(models.UserSearch)
 class UserSearchAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["pk", "user", "search"]

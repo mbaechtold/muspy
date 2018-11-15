@@ -154,7 +154,7 @@ class Job(models.Model):
     GET_COVER = 3
     IMPORT_LASTFM = 4
 
-    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, blank=True)
     type = models.IntegerField()
     data = models.TextField()
 
