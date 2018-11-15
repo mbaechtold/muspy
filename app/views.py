@@ -30,15 +30,11 @@ from django.http import HttpResponseForbidden
 from django.http import HttpResponseNotFound
 from django.shortcuts import redirect
 from django.shortcuts import render
-from django.utils.timezone import now
 from django.views.decorators.cache import cache_control
 
-import app.musicbrainz as mb
 from app import lastfm
-from app.cover import Cover
 from app.forms import *
 from app.models import *
-from app.tasks import check_releases
 from app.tools import arrange_for_table
 
 
@@ -407,7 +403,6 @@ def index(request):
 
 @login_required
 def releases(request):
-    # check_releases.delay(now())
     PER_PAGE = 10
     limit = PER_PAGE + 1
     offset = int(request.GET.get("offset", 0))

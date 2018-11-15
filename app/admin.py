@@ -28,7 +28,7 @@ class NotificationAdmin(admin.ModelAdmin):
 
 @admin.register(models.ReleaseGroup)
 class ReleaseGroupAdmin(admin.ModelAdmin):
-    list_display = ["pk", "name", "mbid", "artist"]
+    list_display = ["pk", "name", "mbid", "artist", "cover_art_url"]
     list_display_links = ["name"]
     list_filter = ["is_deleted", "type"]
     search_fields = ["name"]

@@ -207,6 +207,8 @@ class ReleaseGroup(models.Model):
 
     """
 
+    FALLBACK_COVER_ART_URL = "https://via.placeholder.com/250x250.png?text=NOT FOUND"
+
     class Meta:
         unique_together = ("artist", "mbid")
 
@@ -304,9 +306,9 @@ class ReleaseGroup(models.Model):
     def cover_url(self):
         if self.cover_art_url:
             return self.cover_art_url
+        return self.update_cover_art_url()
 
-        fallback = "https://via.placeholder.com/250x250.png?text=NOT FOUND"
-
+    def update_cover_art_url(self):
         # Attempt 1: Get cover url from the Cover Art Archive
         response = requests.get(
             f"https://coverartarchive.org/release-group/{self.mbid}/front-250",
@@ -325,18 +327,18 @@ class ReleaseGroup(models.Model):
             try:
                 album = lastfm_client.get_album_by_mbid(release["id"])
             except WSError:
-                self.cover_art_url = fallback
+                self.cover_art_url = self.FALLBACK_COVER_ART_URL
                 self.save()
-                return fallback
+                return self.FALLBACK_COVER_ART_URL
             cover_art_url = album.get_cover_image()
             if cover_art_url:
                 self.cover_art_url = cover_art_url
                 self.save()
                 return cover_art_url
 
-        self.cover_art_url = fallback
+        self.cover_art_url = self.FALLBACK_COVER_ART_URL
         self.save()
-        return fallback
+        return self.cover_art_url
 
 
 class Star(models.Model):

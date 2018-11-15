@@ -3,6 +3,11 @@ from __future__ import unicode_literals
 
 import os
 
+import envdir
+from celery import Celery
+from configurations import importer
+
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 os.environ.setdefault("DJANGO_CONFIGURATION", "Development")
 
@@ -10,16 +15,10 @@ os.environ.setdefault("DJANGO_CONFIGURATION", "Development")
 current_folder = os.path.dirname(os.path.abspath(__file__))
 envdir_folder = os.path.join(os.path.dirname(current_folder), ".env_vars")
 if os.path.exists(envdir_folder):
-    import envdir
-
     envdir.open(envdir_folder)
 
 # TODO: Look into https://github.com/jazzband/django-configurations/issues/196
-from configurations import importer
-
 importer.install()
-
-from celery import Celery
 
 app = Celery("muspy")
 
@@ -28,6 +27,4 @@ app = Celery("muspy")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 # Load task modules from all registered Django app configs.
-from django.conf import settings
-
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+app.autodiscover_tasks()
