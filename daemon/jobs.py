@@ -23,6 +23,7 @@ from urllib.request import urlopen
 from PIL import Image
 
 from app import lastfm
+from app.cover import Cover
 from app.models import *
 from app.tools import str_to_date
 from daemon import tools

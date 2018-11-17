@@ -33,6 +33,7 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_control
 
 from app import lastfm
+from app.cover import Cover
 from app.forms import *
 from app.models import *
 from app.tools import arrange_for_table
