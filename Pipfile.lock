@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "8c22148e35271cda0e20e769e4e76dd406887faaf8a76a81135054404d837a2c"
+            "sha256": "9e1e39167587615dba02feb5872c0e9cfe5481ab340fc91636306fe0959876dd"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -39,21 +39,21 @@
         },
         "botocore": {
             "hashes": [
-                "sha256:0ea8386289f5830af68b0dc4cf7d697f9437ec61a462532e3941477430642cb2",
-                "sha256:44908f329d8ae02394559cb68dd09f5c2965bc5ef0b7b21e41dce017684756cd"
+                "sha256:82347fdc3229ba7cecdeec8d53f6837d7b5def365841300e966047c91f1f1f9b",
+                "sha256:f802865c2fdffccc47a9843f4439ce0e36bc4e1bafc18fc9e79623212f7fa468"
             ],
-            "version": "==1.12.44"
+            "version": "==1.12.47"
         },
         "celery": {
             "extras": [
                 "solar"
             ],
             "hashes": [
-                "sha256:2082cbd82effa8ac8a8a58977d70bb203a9f362817e3b66f4578117b9f93d8a9",
-                "sha256:ff727c115533edbc7b81b2b4ba1ec88d1c2fc4836e1e2f4c3c33a76ff53e5d7f"
+                "sha256:77dab4677e24dc654d42dfbdfed65fa760455b6bb563a0877ecc35f4cfcfc678",
+                "sha256:ad7a7411772b80a4d6c64f2f7f723200e39fb66cf614a7fdfab76d345acc7b13"
             ],
             "index": "pypi",
-            "version": "==4.2.0"
+            "version": "==4.2.1"
         },
         "certifi": {
             "hashes": [
@@ -94,9 +94,12 @@
             "version": "==2.0.9"
         },
         "django-celery-beat": {
-            "editable": true,
-            "git": "https://github.com/celery/django-celery-beat.git",
-            "ref": "eb8979e29bffb5a8c069a77f6c8a684dedbd2eb4"
+            "hashes": [
+                "sha256:800b67d396b12c59ca40b50a10c3ace58ca5907879237cad4e0cd404e779aa39",
+                "sha256:81cdf4b2dfe64433ec2527ce654bc4bf3e3a3410690163205f6afcd3697e4158"
+            ],
+            "index": "pypi",
+            "version": "==1.3.0"
         },
         "django-configurations": {
             "hashes": [
@@ -164,7 +167,6 @@
                 "sha256:f19a380f83f36e56e6e499bf673a43c42ed28c766c9cafb4326b5defcca0a116",
                 "sha256:fd15421938cac27cd87c3b73c81e4695ab7a22cd37d43e05090140f5d48392d8"
             ],
-            "markers": "extra == 'solar'",
             "version": "==3.7.6.0"
         },
         "gunicorn": {
@@ -481,11 +483,11 @@
         },
         "pytest-django": {
             "hashes": [
-                "sha256:49e9ffc856bc6a1bec1c26c5c7b7213dff7cc8bc6b64d624c4d143d04aff0bcf",
-                "sha256:b379282feaf89069cb790775ab6bbbd2bd2038a68c7ef9b84a41898e0b551081"
+                "sha256:deffd9d65827c582bd0a85638a0fe52f0eb65a764872ddcee9ce51cdf6ae9f55",
+                "sha256:fe1f71a0171f6b7edac37654da0904c9bd5ffba5221ab5a76779ab870611f41f"
             ],
             "index": "pypi",
-            "version": "==3.4.3"
+            "version": "==3.4.4"
         },
         "pytest-env": {
             "hashes": [
