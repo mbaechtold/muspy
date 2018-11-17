@@ -35,10 +35,11 @@ from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
+from pylast import MalformedResponseError
 from pylast import WSError
 
 import app.musicbrainz as mb
-from app.cover import Cover
+from app.tasks import update_cover_art_by_mbid
 from app.tools import date_to_iso8601
 from app.tools import date_to_str
 from app.tools import str_to_date
@@ -121,19 +122,19 @@ class Artist(models.Model):
         LIMIT = 100
         release_groups = mb.get_release_groups(mbid, limit=LIMIT, offset=0)
         if release_groups:
-            with transaction.atomic():
-                for rg_data in release_groups:
-                    # Ignoring releases without a release date or a type.
-                    if rg_data.get("first-release-date") and rg_data.get("type"):
-                        release_group = ReleaseGroup(
-                            artist=artist,
-                            mbid=rg_data["id"],
-                            name=rg_data["title"],
-                            type=rg_data["type"],
-                            date=str_to_date(rg_data["first-release-date"]),
-                            is_deleted=False,
-                        )
-                        release_group.save()
+            for rg_data in release_groups:
+                # Ignoring releases without a release date or a type.
+                if rg_data.get("first-release-date") and rg_data.get("type"):
+                    release_group = ReleaseGroup(
+                        artist=artist,
+                        mbid=rg_data["id"],
+                        name=rg_data["title"],
+                        type=rg_data["type"],
+                        date=str_to_date(rg_data["first-release-date"]),
+                        is_deleted=False,
+                    )
+                    release_group.save()
+                    update_cover_art_by_mbid.delay(mbid=release_group.mbid)
 
         if release_groups is None or len(release_groups) == LIMIT:
             # Add the remaining release groups
@@ -326,7 +327,7 @@ class ReleaseGroup(models.Model):
         for release in releases:
             try:
                 album = lastfm_client.get_album_by_mbid(release["id"])
-            except WSError:
+            except (WSError, MalformedResponseError):
                 self.cover_art_url = self.FALLBACK_COVER_ART_URL
                 self.save()
                 return self.FALLBACK_COVER_ART_URL

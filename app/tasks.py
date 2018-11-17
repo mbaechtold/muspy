@@ -2,6 +2,8 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import logging
+import time
+from random import randint
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -27,3 +29,11 @@ def update_cover_art():
         release_group_without_cover.update_cover_art_url()
         return f"Fetching cover art for ReleaseGroup#{release_group_without_cover.id}."
     return "No release group without cover art found."
+
+
+@shared_task()
+def update_cover_art_by_mbid(mbid=None):
+    time.sleep(randint(2, 6))
+    release_group = models.ReleaseGroup.objects.get(mbid=mbid)
+    release_group.update_cover_art_url()
+    return f"Fetching cover art for ReleaseGroup#{release_group.id}."
