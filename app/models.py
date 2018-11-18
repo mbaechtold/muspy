@@ -14,7 +14,6 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
-
 import random
 import string
 from smtplib import SMTPException
@@ -51,6 +50,7 @@ class Artist(models.Model):
     sort_name = models.CharField(max_length=512)
     disambiguation = models.CharField(max_length=512, blank=True)
     users = models.ManyToManyField(User, through="UserArtist")
+    last_check_for_releases = models.DateTimeField(null=True, blank=True)
 
     blacklisted = [
         "89ad4ac3-39f7-470e-963a-56509c546377",  # Various Artists
@@ -118,28 +118,31 @@ class Artist(models.Model):
             # The artist was added while we were querying MB.
             return cls.objects.get(mbid=mbid)
 
+        # Fetch a few release when a new artist has been added.
+        artist.get_release_groups(limit=11)
+
         return artist
 
-    def get_release_groups(self):
+    def get_release_groups(self, limit=100_000):
         """
         Fetch the release groups for the artist from MusicBrainz. This might take a few second, so it
         better be called asynchronously. Make sure to not call this method too frequently or you get
         banned from MusicBrainz.
         """
-        LIMIT = 100_000
-        release_groups = mb.get_release_groups(self.mbid, limit=LIMIT, offset=0)
+        release_groups = mb.get_release_groups(self.mbid, limit=limit, offset=0)
         if release_groups:
             for rg_data in release_groups:
                 # Ignoring releases without a release date or a type.
                 if rg_data.get("first-release-date") and rg_data.get("type"):
+                    release_date = str_to_date(rg_data["first-release-date"])
                     release_group, created = ReleaseGroup.objects.get_or_create(
-                        artist=self, mbid=rg_data["id"]
+                        artist=self,
+                        mbid=rg_data["id"],
+                        defaults={"date": release_date, "is_deleted": False},  # Used when creating.
                     )
                     release_group.name = rg_data["title"]
                     release_group.type = rg_data["type"]
-                    release_group.date = str_to_date(rg_data["first-release-date"])
-                    if created:
-                        release_group.is_deleted = False
+                    release_group.date = release_date
                     release_group.save()
 
         return True
@@ -222,6 +225,7 @@ class ReleaseGroup(models.Model):
     date = models.IntegerField()  # 20080101 OR 20080100 OR 20080000
     is_deleted = models.BooleanField()
     cover_art_url = models.URLField(blank=True)
+    last_check_for_cover_art = models.DateTimeField(null=True, blank=True)
 
     users_who_starred = models.ManyToManyField(
         User, through="Star", related_name="starred_release_groups"
@@ -309,7 +313,7 @@ class ReleaseGroup(models.Model):
     def cover_url(self):
         # TODO: Prevent hammering.
         tasks.update_cover_art_by_mbid.delay(self.mbid)
-        return self.cover_art_url
+        return self.cover_art_url or "https://via.placeholder.com/250x250.png?text=LOADING"
 
     def update_cover_art_url(self):
         """
