@@ -6,11 +6,17 @@
     <p><a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{% static 'add.gif' %}" alt="+"/></a>
       <a href="/artists-add?id={{ artist.mbid }}">Click to follow this artist</a></p>
   {% endif %}
-  <table id="releases">
-    {% for release in release_groups %}
-      {% include "_release.html" %}
-    {% endfor %}
-  </table>
+  {% if release_groups %}
+    <table id="releases">
+      {% for release in release_groups %}
+        {% include "_release.html" %}
+      {% endfor %}
+    </table>
+  {% else %}
+    <div class="message info">
+      <p>Loading releases... Please refresh your browser in a moment.</p>
+    </div>
+  {% endif %}
   {% if offset %}
     <p><a href="{{ request.path }}?offset={{ offset }}" rel="noindex">Next {{ PER_PAGE }} &raquo;</a></p>
   {% endif %}

@@ -112,7 +112,7 @@ def _fetch(resource, mbid=None, **kw):
         url += mbid
     url += "?" + urlencode(kw)
 
-    request = Request(url, headers={"User-Agent": "muspy/2.0"})
+    request = Request(url, headers={"User-Agent": "muspy.baechtold.me/1.0"})
     response = urlopen(request)
     return response.read()
 

@@ -18,7 +18,6 @@
 import random
 import string
 from smtplib import SMTPException
-from time import sleep
 
 import requests
 from django.conf import settings
@@ -39,7 +38,7 @@ from pylast import MalformedResponseError
 from pylast import WSError
 
 import app.musicbrainz as mb
-from app.tasks import update_cover_art_by_mbid
+from app import tasks
 from app.tools import date_to_iso8601
 from app.tools import date_to_str
 from app.tools import str_to_date
@@ -89,7 +88,10 @@ class Artist(models.Model):
 
     @classmethod
     def get_by_mbid(cls, mbid):
-        """ Fetches the artist and releases from MB if not in the database. """
+        """
+        Returns the artist having the given mbid. Fetch the artist from MusicBrainz if the artist
+        does not yet exist in Muspy.
+        """
         if mbid in cls.blacklisted:
             raise cls.Blacklisted()
 
@@ -116,31 +118,31 @@ class Artist(models.Model):
             # The artist was added while we were querying MB.
             return cls.objects.get(mbid=mbid)
 
-        # Add a few release groups immediately.
-        # Sleep 1s to comply with the MB web service.
-        sleep(1)
-        LIMIT = 100
-        release_groups = mb.get_release_groups(mbid, limit=LIMIT, offset=0)
+        return artist
+
+    def get_release_groups(self):
+        """
+        Fetch the release groups for the artist from MusicBrainz. This might take a few second, so it
+        better be called asynchronously. Make sure to not call this method too frequently or you get
+        banned from MusicBrainz.
+        """
+        LIMIT = 100_000
+        release_groups = mb.get_release_groups(self.mbid, limit=LIMIT, offset=0)
         if release_groups:
             for rg_data in release_groups:
                 # Ignoring releases without a release date or a type.
                 if rg_data.get("first-release-date") and rg_data.get("type"):
-                    release_group = ReleaseGroup(
-                        artist=artist,
-                        mbid=rg_data["id"],
-                        name=rg_data["title"],
-                        type=rg_data["type"],
-                        date=str_to_date(rg_data["first-release-date"]),
-                        is_deleted=False,
+                    release_group, created = ReleaseGroup.objects.get_or_create(
+                        artist=self, mbid=rg_data["id"]
                     )
+                    release_group.name = rg_data["title"]
+                    release_group.type = rg_data["type"]
+                    release_group.date = str_to_date(rg_data["first-release-date"])
+                    if created:
+                        release_group.is_deleted = False
                     release_group.save()
-                    update_cover_art_by_mbid.delay(mbid=release_group.mbid)
 
-        if release_groups is None or len(release_groups) == LIMIT:
-            # Add the remaining release groups
-            Job.add_release_groups(artist)
-
-        return artist
+        return True
 
     @classmethod
     def get_by_user(cls, user):
@@ -305,11 +307,16 @@ class ReleaseGroup(models.Model):
 
     @property
     def cover_url(self):
-        if self.cover_art_url:
-            return self.cover_art_url
-        return self.update_cover_art_url()
+        # TODO: Prevent hammering.
+        tasks.update_cover_art_by_mbid.delay(self.mbid)
+        return self.cover_art_url
 
     def update_cover_art_url(self):
+        """
+        Fetch the release groups for the artist from MusicBrainz or Last.fm. This might take a few
+        second, so it better be called asynchronously. Make sure to not call this method too frequently
+        or you get banned from MusicBrainz or Last.fm.
+        """
         # Attempt 1: Get cover url from the Cover Art Archive
         response = requests.get(
             f"https://coverartarchive.org/release-group/{self.mbid}/front-250",

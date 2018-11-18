@@ -37,3 +37,11 @@ def update_cover_art_by_mbid(mbid=None):
     release_group = models.ReleaseGroup.objects.get(mbid=mbid)
     release_group.update_cover_art_url()
     return f"Fetching cover art for ReleaseGroup#{release_group.id}."
+
+
+@shared_task()
+def get_release_groups_by_artist(artist_mbid=None):
+    time.sleep(randint(1, 5))
+    artist = models.Artist.objects.get(mbid=artist_mbid)
+    artist.get_release_groups()
+    return f"Fetching release groups for Artist#{artist_mbid}."

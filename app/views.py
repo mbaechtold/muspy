@@ -70,6 +70,9 @@ def artist(request, mbid):
         # TODO: Show a meaningful error message.
         return HttpResponseNotFound()
 
+    # The user triggers a potential query for new release groups.
+    tasks.get_release_groups_by_artist.delay(artist_mbid=artist.mbid)
+
     PER_PAGE = 10
     try:
         offset = int(request.GET.get("offset", 0))
@@ -84,6 +87,10 @@ def artist(request, mbid):
     else:
         show_stars = False
         release_groups = ReleaseGroup.get(artist=artist, limit=PER_PAGE, offset=offset)
+
+    for release_group in release_groups:
+        # The user triggers a potential query for a newer cover art for the release groups.
+        tasks.update_cover_art_by_mbid.delay(release_group.mbid)
 
     release_groups = list(release_groups)
     offset = offset + PER_PAGE if len(release_groups) == PER_PAGE else None
