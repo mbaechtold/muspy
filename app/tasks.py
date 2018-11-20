@@ -18,6 +18,22 @@ logger = logging.getLogger("app")
 
 
 @shared_task()
+def trigger_release_update_for_outdated_artist():
+    """
+    This task can be run as a periodic task. It will then trigger an asynchronous check
+    for new releases for the artist we checked last.
+    """
+    artist = models.Artist.objects.all().order_by("-last_check_for_releases").first()
+    if not artist:
+        return "Not checking for new releases because all artists are rather fresh."
+
+    # Make sure the following call implements locking in order not to hammer MusicBrainz.
+    get_release_groups_by_artist.delay(artist_mbid=artist.mbid)
+
+    return f"Periodic check for new releases triggered for Artist#{artist.id}."
+
+
+@shared_task()
 def update_cover_art():
     release_group_without_cover = (
         models.ReleaseGroup.objects.filter(
