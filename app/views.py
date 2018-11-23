@@ -30,7 +30,9 @@ from django.http import HttpResponseForbidden
 from django.http import HttpResponseNotFound
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.views.decorators.cache import cache_control
+from django.views.generic import RedirectView
 
 from app import lastfm
 from app.cover import Cover
@@ -310,9 +312,13 @@ def feed(request):
     )
 
 
-def ical(request):
-    user_id = request.GET.get("id", "")
-    profile = UserProfile.get_by_username(user_id)
+def ical_redirect(request):
+    username = request.GET.get("id", "")
+    return redirect("ical", username)
+
+
+def ical(request, username):
+    profile = UserProfile.get_by_username(username)
     if not profile:
         return HttpResponseNotFound()
 
@@ -346,7 +352,7 @@ def ical(request):
         # uid must be globally unique.
         # this approximates the recommended format on the spec.
         # the uid is important: it's used to sync events if changes are made.
-        event["uid"] = "%s-%s@muspy.com" % (r.id, user_id)
+        event["uid"] = "%s-%s@muspy.com" % (r.id, username)
 
         release_events.append(event)
 
