@@ -7,6 +7,8 @@ from random import randint
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.utils.timezone import now
 
@@ -98,3 +100,26 @@ def get_release_groups_by_artist(artist_mbid=None):
     artist.save()
 
     return f"Fetching release groups for Artist#{artist.id}."
+
+
+@shared_task()
+def import_artists_from_lastfm(user_pk, lastfm_username, period, limit):
+    user = User.objects.get(pk=user_pk)
+    client = settings.LASTFM_CLIENT
+    lastfm_user = client.get_user(lastfm_username)
+    artists = lastfm_user.get_top_artists(period=period, limit=limit)
+
+    for artist in artists:
+        time.sleep(2)
+        try:
+            mbid = artist.item.get_mbid()
+        except:
+            continue
+        if not mbid:
+            continue
+        if mbid in models.Artist.blacklisted:
+            continue
+        artist, created = models.Artist.objects.get_or_create(
+            mbid=mbid, defaults={"name": artist[0].name, "sort_name": artist[0].name}
+        )
+        models.UserArtist.add(user, artist)

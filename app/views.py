@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 from calendar import monthrange
 from datetime import date
 from datetime import timedelta
@@ -31,12 +32,20 @@ from django.http import HttpResponseNotFound
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.decorators.cache import cache_control
+from pylast import PERIOD_3MONTHS
+from pylast import PERIOD_6MONTHS
+from pylast import PERIOD_7DAYS
+from pylast import PERIOD_12MONTHS
+from pylast import PERIOD_OVERALL
 
 from app import lastfm
 from app.cover import Cover
 from app.forms import *
 from app.models import *
 from app.tools import arrange_for_table
+
+
+logger = logging.getLogger("app")
 
 
 def activate(request):
@@ -323,7 +332,7 @@ def ical(request):
 
     for r in releases:
         event = {}
-        event["summary"] = u"{} - {}".format(r.artist.name, r.name)
+        event["summary"] = "{} - {}".format(r.artist.name, r.name)
 
         year = r.date // 10000
 
@@ -374,14 +383,7 @@ def import_artists(request):
         if not username:
             messages.error(request, "Please enter your Last.fm user name.")
             return redirect("/import")
-        if Job.has_import_lastfm(request.user) or Job.importing_artists(request.user):
-            messages.error(
-                request,
-                "You already have a pending import. Please wait until "
-                "the import finishes before importing again. "
-                "Refresh this page to track the progress.",
-            )
-            return redirect("/artists")
+
         if not lastfm.has_user(username):
             messages.error(request, "Unknown user: %s" % username)
             return redirect("/import")
@@ -390,9 +392,19 @@ def import_artists(request):
         count = int(count) if count.isdigit() else 50
         count = min(500, count)
         period = request.POST.get("period", "")
-        if period not in ["overall", "12month", "6month", "3month", "7day"]:
-            period = "overall"
-        Job.import_lastfm(request.user, username, count, period)
+        if period not in [
+            PERIOD_OVERALL,
+            PERIOD_12MONTHS,
+            PERIOD_6MONTHS,
+            PERIOD_3MONTHS,
+            PERIOD_7DAYS,
+        ]:
+            period = PERIOD_OVERALL
+
+        tasks.import_artists_from_lastfm.delay(
+            user_pk=request.user.pk, lastfm_username=username, period=period, limit=count
+        )
+
         messages.info(
             request,
             "Your artists will be imported in a few minutes. "
