@@ -252,7 +252,7 @@ class Base(Configuration):
 
     @property
     def LASTFM_CLIENT(self):
-        return get_lastfm_network()
+        return get_lastfm_network(self.BASE_DIR)
 
 
 class Development(CeleryMixin, Base):

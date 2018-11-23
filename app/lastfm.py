@@ -88,7 +88,7 @@ def _parse_artist(element):
     return d
 
 
-def get_lastfm_network():
+def get_lastfm_network(base_dir):
     """
     Please don't use this directly. You can get the singleton Last.fm client from the
     Django settings:
@@ -97,9 +97,11 @@ def get_lastfm_network():
         client = settings.LASTFM_CLIENT
     """
 
-    return pylast.LastFMNetwork(
+    network = pylast.LastFMNetwork(
         api_key=os.environ.get("LASTFM_API_KEY", ""),
         api_secret=os.environ.get("LASTFM_API_SECRET", ""),
         username=os.environ.get("LASTFM_USERNAME", ""),
         password_hash=pylast.md5(os.environ.get("LASTFM_PASSWORD", "")),
     )
+    network.enable_caching(base_dir + "/tmp/pylast_cache")
+    return network
