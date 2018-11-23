@@ -10,6 +10,7 @@ from celery.utils.log import get_task_logger
 from django.db.models import Q
 from django.utils.timezone import now
 
+from app import lastfm
 from app import models
 
 
