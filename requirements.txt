@@ -2,7 +2,7 @@
 amqp==2.3.2
 billiard==3.5.0.4
 boto3==1.9.40
-botocore==1.12.47
+botocore==1.12.48
 celery[solar]==4.2.1
 certifi==2018.10.15
 chardet==3.0.4
@@ -11,6 +11,7 @@ dj-email-url==0.1.0
 django-celery-beat==1.3.0
 django-configurations==2.1
 django-extensions==2.1.3
+django-ical==1.5
 django-piston==0.2.3
 django-storages==1.7.1
 django-timezone-field==3.0
@@ -19,6 +20,7 @@ docutils==0.14
 envdir==1.0.1
 ephem==3.7.6.0
 gunicorn==19.9.0
+icalendar==4.0.3
 idna==2.7
 jmespath==0.9.3
 kombu==4.2.1

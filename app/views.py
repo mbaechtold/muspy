@@ -33,6 +33,7 @@ from django.http import HttpResponseNotFound
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.views.decorators.cache import cache_control
+from django_ical.views import ICalFeed
 from pylast import PERIOD_3MONTHS
 from pylast import PERIOD_6MONTHS
 from pylast import PERIOD_7DAYS
@@ -320,55 +321,70 @@ def feed(request):
     )
 
 
-def ical(request):
-    user_id = request.GET.get("id", "")
-    profile = UserProfile.get_by_username(user_id)
-    if not profile:
-        return HttpResponseNotFound()
+def ical_redirect(request):
+    username = request.GET.get("id", "")
+    return redirect("ical", username)
 
-    LIMIT = 40
-    releases = list(ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0, feed=True))
 
-    release_events = []
+class MuspyFeed(ICalFeed):
+    timezone = settings.TIME_ZONE
+    filename = "muspy.ics"
+    limit = 40
 
-    for r in releases:
-        event = {}
-        event["summary"] = "{} - {}".format(r.artist.name, r.name)
+    def __call__(self, request, *args, **kwargs):
+        self.request = request
+        self.profile = UserProfile.get_by_username(kwargs.pop("username"))
+        self.hostname = urlsplit(self.request.build_absolute_uri("/")).netloc
+        if not self.profile:
+            return HttpResponseNotFound()
+        return super(MuspyFeed, self).__call__(request, *args, **kwargs)
 
-        year = r.date // 10000
+    @property
+    def product_id(self):
+        return f"-//{self.hostname}//1.0//EN"
 
-        # month/day aren't always present.
-        month = (r.date // 100) % 100
-        if month == 0:
-            continue
+    def title(self):
+        return "Muspy"
 
-        day = r.date % 100
+    def items(self):
+        items = []
+        queryset = ReleaseGroup.get(user=self.profile.user, limit=self.limit, offset=0, feed=True)
+        for release_group in queryset:
+            # month/day aren't always present.
+            month = (release_group.date // 100) % 100
+            if month == 0:
+                continue
+            items.append(release_group)
+        return items
+
+    def item_title(self, item):
+        return f"{item.artist.name} - {item.name}"
+
+    def item_description(self, item):
+        day = item.date % 100
+        if day == 0:
+            return "The exact release date is subject to change."
+        return ""
+
+    def item_start_datetime(self, item):
+        year = item.date // 10000
+        month = (item.date // 100) % 100
+        day = item.date % 100
         if day == 0:
             # arbitrarily set the release as the last day of the month.
             # hopefully, the date will be clarified before then, but this
             # will ensure it's not missed on the calendar.
             day = monthrange(year, month)[1]
+        return date(year, month, day)
 
-        event_date = date(year, month, day)
-        event["date_start_str"] = event_date.strftime("%Y%m%d")
-        event["date_end_str"] = (event_date + timedelta(days=1)).strftime("%Y%m%d")
+    def item_end_datetime(self, item):
+        return self.item_start_datetime(item) + timedelta(days=1)
 
-        # uid must be globally unique.
-        # this approximates the recommended format on the spec.
-        # the uid is important: it's used to sync events if changes are made.
-        event["uid"] = "{}-{}@{}".format(
-            r.id, user_id, urlsplit(request.build_absolute_uri("/")).netloc
-        )
+    def item_guid(self, item):
+        return f"{str(item.id)}@{self.hostname}"
 
-        release_events.append(event)
-
-    ical_str = render_to_string(
-        "ical.ical",
-        {"company": "Muspy", "title": "Muspy releases", "release_events": release_events},
-    )
-
-    # ical spec declares \r\n newlines
-    return HttpResponse(ical_str.replace("\n", "\r\n"), content_type="text/calendar; charset=UTF-8")
+    def item_link(self, item):
+        return self.request.build_absolute_uri("/")
 
 
 def forbidden(request):
