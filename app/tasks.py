@@ -19,7 +19,7 @@ celery_logger = get_task_logger(__name__)
 logger = logging.getLogger("app")
 
 
-@shared_task()
+@shared_task(name="Fetch new releases (periodic task)")
 def trigger_release_update_for_outdated_artist():
     """
     This task can be run as a periodic task. It will then trigger an asynchronous check
@@ -35,7 +35,7 @@ def trigger_release_update_for_outdated_artist():
     return f"Periodic check for new releases triggered for Artist#{artist.id}."
 
 
-@shared_task()
+@shared_task(name="Update cover art (periodic task)")
 def update_cover_art():
     release_group_without_cover = (
         models.ReleaseGroup.objects.filter(
@@ -50,7 +50,7 @@ def update_cover_art():
     return "No release group without cover art found."
 
 
-@shared_task()
+@shared_task(name="Update cover art of given artist")
 def update_cover_art_by_mbid(mbid=None):
     release_group = models.ReleaseGroup.objects.get(mbid=mbid)
 
@@ -76,7 +76,7 @@ def update_cover_art_by_mbid(mbid=None):
     return f"Fetching cover art for ReleaseGroup#{release_group.id}."
 
 
-@shared_task()
+@shared_task(name="Get release groups of the given artist")
 def get_release_groups_by_artist(artist_mbid=None):
     artist = models.Artist.objects.get(mbid=artist_mbid)
 
@@ -102,7 +102,7 @@ def get_release_groups_by_artist(artist_mbid=None):
     return f"Fetching release groups for Artist#{artist.id}."
 
 
-@shared_task()
+@shared_task(name="Import artists from Last.fm for the given username")
 def import_artists_from_lastfm(user_pk, lastfm_username, period, limit):
     user = User.objects.get(pk=user_pk)
     client = settings.LASTFM_CLIENT
