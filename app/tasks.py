@@ -25,7 +25,7 @@ def trigger_release_update_for_outdated_artist():
     This task can be run as a periodic task. It will then trigger an asynchronous check
     for new releases for the artist we checked last.
     """
-    artist = models.Artist.objects.all().order_by("-last_check_for_releases").first()
+    artist = models.Artist.objects.all().order_by("last_check_for_releases").first()
     if not artist:
         return "Not checking for new releases because all artists are rather fresh."
 
@@ -68,10 +68,10 @@ def update_cover_art_by_mbid(mbid=None):
     # lots of users on the website.
     time.sleep(randint(2, 10))
 
-    release_group.update_cover_art_url()
-
     release_group.last_check_for_cover_art = now()
     release_group.save()
+
+    release_group.update_cover_art_url()
 
     return f"Fetching cover art for ReleaseGroup#{release_group.id}."
 
@@ -90,14 +90,14 @@ def get_release_groups_by_artist(artist_mbid=None):
                 f"Unlocking in {backoff-seconds_since_last_check} seconds."
             )
 
+    artist.last_check_for_releases = now()
+    artist.save()
+
     # Wait a random amount of seconds so we don't fire too many request at the same time if we have
     # lots of users on the website.
     time.sleep(randint(2, 10))
 
     artist.get_release_groups()
-
-    artist.last_check_for_releases = now()
-    artist.save()
 
     return f"Fetching release groups for Artist#{artist.id}."
 
