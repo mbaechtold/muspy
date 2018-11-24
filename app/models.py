@@ -33,6 +33,7 @@ from django.db.models.functions import Coalesce
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
+from django.urls import reverse
 from pylast import MalformedResponseError
 from pylast import WSError
 
@@ -79,6 +80,9 @@ class Artist(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("artist", args=[self.mbid])
 
     class Blacklisted(Exception):
         pass

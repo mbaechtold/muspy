@@ -31,7 +31,7 @@ urlpatterns = [
     url(r"^$", views.index),
     url(r"^activate$", views.activate),
     url(r"^about$", TemplateView.as_view(template_name="about.html")),
-    url(r"^artist/([0-9a-f\-]+)$", views.artist),
+    url(r"^artist/([0-9a-f\-]+)$", views.artist, name="artist"),
     url(r"^artists$", views.artists),
     url(r"^artists-add$", views.artists_add),
     url(r"^artists-remove$", views.artists_remove),
