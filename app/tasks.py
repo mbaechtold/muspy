@@ -123,3 +123,20 @@ def import_artists_from_lastfm(user_pk, lastfm_username, period, limit):
             mbid=mbid, defaults={"name": artist[0].name, "sort_name": artist[0].name}
         )
         models.UserArtist.add(user, artist)
+
+
+@shared_task(name="Notify users")
+def notify_user(user_pk, release_group_pk):
+    """
+    Notify a user about a specific release.
+    """
+    user = User.objects.get(pk=user_pk)
+    release_group = models.ReleaseGroup.objects.get(pk=release_group_pk)
+    user.profile.send_email(
+        subject="[muspy] New Release: %s - %s" % (release_group.artist.name, release_group.name),
+        text_template="email/release.txt",
+        html_template="email/release.html",
+        release=release_group,
+        username=user.username,
+        root="https://muspy.baechtold.me/",
+    )

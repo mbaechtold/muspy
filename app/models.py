@@ -231,9 +231,11 @@ class ReleaseGroup(models.Model):
     cover_art_url = models.URLField(blank=True)
     last_check_for_cover_art = models.DateTimeField(null=True, blank=True)
 
+    # TODO: This seems not to be used anywhere. Remove it!
     users_who_starred = models.ManyToManyField(
         User, through="Star", related_name="starred_release_groups"
     )
+    # TODO: This seems not to be used anywhere. Remove it!
     users_to_notify = models.ManyToManyField(
         User, through="Notification", related_name="new_release_groups"
     )
@@ -381,7 +383,7 @@ class UserArtist(models.Model):
     class Meta:
         unique_together = ("user", "artist")
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="favorite_artists")
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
 
@@ -469,9 +471,9 @@ class UserProfile(models.Model):
         msg = EmailMultiAlternatives(
             subject,
             text,
-            "bounces@muspy.com",
+            "muspy@baechtold.me",
             [self.user.email],
-            headers={"From": "muspy.com <info@muspy.com>"},
+            headers={"From": "muspy.baechtold.me <muspy@baechtold.me>"},
         )
         if html_template:
             html = render_to_string(html_template, kwds)
