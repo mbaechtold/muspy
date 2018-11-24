@@ -29,7 +29,7 @@ from app.forms import SignInForm
 
 urlpatterns = [
     url(r"^$", views.index),
-    url(r"^activate$", views.activate),
+    url(r"^activate$", views.activate, name="activate"),
     url(r"^about$", TemplateView.as_view(template_name="about.html")),
     url(r"^artist/([0-9a-f\-]+)$", views.artist, name="artist"),
     url(r"^artists$", views.artists),
@@ -46,7 +46,7 @@ urlpatterns = [
     url(r"^ical$", views.ical),
     url(r"^import$", views.import_artists),
     url(r"^releases$", views.releases),
-    url(r"^reset$", views.reset),
+    url(r"^reset$", views.reset, name="reset"),
     url(r"^settings$", views.settings),
     url(
         r"^signin$", LoginView.as_view(authentication_form=SignInForm, template_name="signin.html")

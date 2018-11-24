@@ -17,11 +17,8 @@
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
-from django.db import transaction
 
 from app.models import *
-from app.tools import check_password
 
 
 class ResetForm(forms.Form):
@@ -35,6 +32,11 @@ class ResetForm(forms.Form):
 
 
 class SettingsForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+
     email = forms.EmailField(label="New email")
     new_password = forms.CharField(
         label="New password",
@@ -66,7 +68,7 @@ class SettingsForm(forms.Form):
             with transaction.atomic():
                 self.profile.user.save()
                 self.profile.save()
-            self.profile.send_activation_email()
+            self.profile.send_activation_email(self.request)
         changed = False
         if self.cleaned_data["new_password"]:
             self.profile.user.set_password(self.cleaned_data["new_password"])

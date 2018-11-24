@@ -485,7 +485,7 @@ class UserProfile(models.Model):
             return False
         return True
 
-    def send_activation_email(self):
+    def send_activation_email(self, request):
         code = self.generate_code()
         self.activation_code = code
         self.save()
@@ -493,10 +493,10 @@ class UserProfile(models.Model):
             subject="Email Activation",
             text_template="email/activate.txt",
             html_template=None,
-            code=code,
+            activate_url=request.build_absolute_uri(reverse("activate")) + "?code=" + code,
         )
 
-    def send_reset_email(self):
+    def send_reset_email(self, request):
         code = self.generate_code()
         self.reset_code = code
         self.save()
@@ -504,7 +504,7 @@ class UserProfile(models.Model):
             subject="Password Reset Confirmation",
             text_template="email/reset.txt",
             html_template=None,
-            code=code,
+            reset_url=request.build_absolute_uri(reverse("reset")) + "?code=" + code,
         )
 
     def unsubscribe(self):

@@ -19,6 +19,7 @@ import logging
 from calendar import monthrange
 from datetime import date
 from datetime import timedelta
+from urllib.parse import urlsplit
 
 from django.conf import settings as django_settings
 from django.contrib import messages
@@ -66,7 +67,7 @@ def activate(request):
         messages.info(request, "Your email address is already active.")
         return redirect("/")
 
-    request.user.profile.send_activation_email()
+    request.user.profile.send_activation_email(request)
     return render(request, "activate.html")
 
 
@@ -355,7 +356,9 @@ def ical(request):
         # uid must be globally unique.
         # this approximates the recommended format on the spec.
         # the uid is important: it's used to sync events if changes are made.
-        event["uid"] = "%s-%s@muspy.com" % (r.id, user_id)
+        event["uid"] = "{}-{}@{}".format(
+            r.id, user_id, urlsplit(request.build_absolute_uri("/")).netloc
+        )
 
         release_events.append(event)
 
@@ -453,7 +456,7 @@ def reset(request):
                 # TODO: Remove. This will never happen because the form validation already checked for user profile and raise a validation error.
                 messages.error(request, "Unknown email address: " + email)
                 return redirect("/")
-            profile.send_reset_email()
+            profile.send_reset_email(request)
             messages.success(
                 request,
                 "An email has been sent to %s describing how to "
@@ -477,7 +480,7 @@ def reset(request):
 @login_required
 def settings(request):
     if request.method == "POST":
-        form = SettingsForm(request.POST)
+        form = SettingsForm(data=request.POST, request=request)
         form.profile = request.user.profile
         if form.is_valid():
             form.save()
@@ -495,7 +498,7 @@ def settings(request):
             "notify_remix": request.user.profile.notify_remix,
             "notify_other": request.user.profile.notify_other,
         }
-        form = SettingsForm(initial=initial)
+        form = SettingsForm(initial=initial, request=request)
 
     return render(request, "settings.html", {"form": form})
 
@@ -507,7 +510,7 @@ def signup(request):
         user = authenticate(
             username=form.cleaned_data["email"], password=form.cleaned_data["password"]
         )
-        user.profile.send_activation_email()
+        user.profile.send_activation_email(request)
         login(request, user)
         return redirect(django_settings.LOGIN_REDIRECT_URL)
 
