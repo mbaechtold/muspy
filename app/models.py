@@ -539,6 +539,7 @@ class UserProfile(models.Model):
     @classmethod
     def get_by_email(cls, email):
         # We can have multiple users having the same email address.
+        # TODO: But the validation in the signup form (app.forms.SignUpForm) does not allow this...
         users = User.objects.filter(email=email.lower())
         if not users:
             return None
