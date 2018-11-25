@@ -6,6 +6,23 @@
     <p><a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{% static 'add.gif' %}" alt="+"/></a>
       <a href="/artists-add?id={{ artist.mbid }}">Click to follow this artist</a></p>
   {% endif %}
+  {% if recommended_artists %}
+    <h2>Similar artists you may also want to follow:
+      <small>(click <img class="add_artist" src="{% static 'add.gif' %}" alt="+"/> to follow the artist)</small>
+    </h2>
+    <div id="found_artists">
+      <ul>
+        {% for artist in recommended_artists %}
+          <li>
+            <a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{% static 'add.gif' %}" alt="+" title="Add"/></a>
+            <a href="/artist/{{ artist.mbid }}">{{ artist.name }}</a>
+            {% if artist.disambiguation %}&nbsp;
+              <small>({{ artist.disambiguation }})</small>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
   {% if release_groups %}
     <table id="releases">
       {% for release in release_groups %}

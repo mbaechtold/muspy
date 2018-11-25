@@ -8,12 +8,24 @@ class ReleaseGroupAdminInline(admin.TabularInline):
     extra = 1
 
 
+class ArtistSimilarityInline(admin.TabularInline):
+    model = models.ArtistSimilarity
+    fk_name = "from_artist"
+    raw_id_fields = ("to_artist",)
+    extra = 1
+
+
 @admin.register(models.Artist)
 class ArtistAdmin(admin.ModelAdmin):
     list_display = ["pk", "name", "mbid", "last_check_for_releases"]
     list_display_links = ["name"]
     search_fields = ["name", "mbid"]
-    inlines = [ReleaseGroupAdminInline]
+    inlines = [ReleaseGroupAdminInline, ArtistSimilarityInline]
+
+
+@admin.register(models.ArtistSimilarity)
+class ArtistSimilarityAdmin(admin.ModelAdmin):
+    list_display = ["pk", "from_artist", "to_artist", "match"]
 
 
 @admin.register(models.Job)

@@ -24,6 +24,22 @@
             <p><a href="/artists?search={{ search|urlencode }}{% if dontadd %}&amp;dontadd=1{% endif %}&amp;offset={{ artists_offset }}">{{ artists_left }} more artist{{ artists_left|pluralize }}</a></p>
         {% endif %}
     {% endif %}
+{% elif recommended_artists %}
+  <p>Artists you may also want to follow:
+    <small>(click <img class="add_artist" src="{% static 'add.gif' %}" alt="+"/> to follow the artist)</small>
+  </p>
+  <div id="found_artists">
+    <ul>
+      {% for artist in recommended_artists %}
+        <li>
+          <a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{% static 'add.gif' %}" alt="+" title="Add"/></a>
+          <a href="/artist/{{ artist.mbid }}">{{ artist.name }}</a>
+          {% if artist.disambiguation %}&nbsp;
+            <small>({{ artist.disambiguation }})</small>{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
 {% endif %}
 
 <form action="/artists" method="post">

@@ -27,6 +27,7 @@ from django.db import IntegrityError
 from django.db import models
 from django.db import transaction
 from django.db.backends.signals import connection_created
+from django.db.models import Count
 from django.db.models import OuterRef
 from django.db.models import Subquery
 from django.db.models.functions import Coalesce
@@ -52,6 +53,9 @@ class Artist(models.Model):
     disambiguation = models.CharField(max_length=512, blank=True)
     users = models.ManyToManyField(User, through="UserArtist")
     last_check_for_releases = models.DateTimeField(null=True, blank=True)
+    similar_artists = models.ManyToManyField(
+        to="self", through="ArtistSimilarity", symmetrical=False, related_name="related_to"
+    )
 
     blacklisted = [
         "89ad4ac3-39f7-470e-963a-56509c546377",  # Various Artists
@@ -155,6 +159,38 @@ class Artist(models.Model):
     def get_by_user(cls, user):
         # TODO: paging
         return cls.objects.filter(users=user).order_by("sort_name")[:4000]
+
+    def fetch_similar_artists_from_lastfm(self, lastfm_client, limit=10):
+        if not self.mbid:
+            return
+        lastfm_artist = lastfm_client.get_artist_by_mbid(self.mbid)
+        similar_artists = lastfm_artist.get_similar(limit=limit)
+        for similar_artist in similar_artists:
+            mbid = similar_artist.item.get_mbid()
+            if not mbid:
+                continue
+
+            artist, created = Artist.objects.get_or_create(
+                mbid=mbid,
+                defaults={"name": similar_artist.item.name, "sort_name": similar_artist.item.name},
+            )
+            ArtistSimilarity.objects.get_or_create(
+                from_artist=self, to_artist=artist, defaults={"match": similar_artist.match}
+            )
+
+
+class ArtistSimilarity(models.Model):
+    from_artist = models.ForeignKey(Artist, related_name="from_artists", on_delete=models.CASCADE)
+    to_artist = models.ForeignKey(Artist, related_name="to_artists", on_delete=models.CASCADE)
+    match = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Artist Similarity"
+        verbose_name_plural = "Artist Similarities"
+        ordering = ("-match",)
+
+    def __str__(self):
+        return f"Similar artist for {self.from_artist}: {self.to_artist} ({self.match})"
 
 
 class Job(models.Model):
@@ -569,6 +605,23 @@ class UserProfile(models.Model):
         chars = string.ascii_lowercase + string.digits
         username = "".join(random.choices(chars, k=30))
         return User.objects.create_user(username, email, password)
+
+    def get_recommended_artists(self):
+
+        if not self.user.favorite_artists.exists():
+            return []
+
+        favorite_artists = [favorite.artist for favorite in self.user.favorite_artists.all()]
+
+        similarities = (
+            ArtistSimilarity.objects.filter(from_artist__in=favorite_artists)
+            .exclude(to_artist__in=favorite_artists)
+            .values_list("to_artist")
+            .annotate(count=Count("to_artist"))
+            .order_by("-count")
+        )
+
+        return Artist.objects.filter(pk__in=[similarity[0] for similarity in similarities[:20]])
 
 
 class UserSearch(models.Model):

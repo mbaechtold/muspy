@@ -9,6 +9,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.db.models import Q
 from django.utils.timezone import now
 
@@ -140,3 +141,30 @@ def notify_user(user_pk, release_group_pk):
         username=user.username,
         root="https://muspy.baechtold.me/",
     )
+
+
+@shared_task(name="Get similar artists (periodic task)")
+def get_similar_artists():
+    """
+    This task can be run as a periodic task.
+    """
+
+    # Randomly get an artist not having any similar artist.
+    artist = (
+        models.Artist.objects.annotate(num_similar_artists=Count("similar_artists"))
+        .filter(num_similar_artists=0)
+        .order_by("?")
+        .first()
+    )
+
+    if not artist:
+        # TODO: The similar artists may change over time. Consider that!
+        return f"Every artist has some similar artist(s). Aborting."
+
+    # Wait a random amount of seconds so the requests are not sent too periodically.
+    time.sleep(randint(2, 10))
+
+    client = settings.LASTFM_CLIENT
+    artist.fetch_similar_artists_from_lastfm(client)
+
+    return f"Fetching similar artists for Artist#{artist.id}."
