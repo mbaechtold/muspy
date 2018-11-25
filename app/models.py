@@ -250,7 +250,7 @@ class ReleaseGroup(models.Model):
         return date_to_iso8601(self.date)
 
     @classmethod
-    def get(cls, artist=None, user=None, limit=0, offset=0, feed=False):
+    def get(cls, artist=None, user=None, feed=False):
         if not artist and not user:
             assert "Both artist and user are None"
             return None
@@ -295,7 +295,7 @@ class ReleaseGroup(models.Model):
             )
             queryset = queryset.order_by("-is_starred", "-date")
 
-        return queryset[offset : offset + limit]
+        return queryset
 
     @classmethod
     def get_calendar(cls, date, limit, offset):

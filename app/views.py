@@ -27,6 +27,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseNotFound
@@ -84,35 +85,34 @@ def artist(request, mbid):
     # The user triggers a potential query for new release groups.
     tasks.get_release_groups_by_artist.delay(artist_mbid=artist.mbid)
 
-    PER_PAGE = 10
-    try:
-        offset = int(request.GET.get("offset", 0))
-    except ValueError:
-        return HttpResponseNotFound()
     user_has_artist = request.user.is_authenticated and UserArtist.get(request.user, artist)
     if user_has_artist:
         show_stars = True
-        release_groups = ReleaseGroup.get(
-            artist=artist, user=request.user, limit=PER_PAGE, offset=offset
-        )
+        queryset = ReleaseGroup.get(artist=artist, user=request.user)
     else:
         show_stars = False
-        release_groups = ReleaseGroup.get(artist=artist, limit=PER_PAGE, offset=offset)
+        queryset = ReleaseGroup.get(artist=artist)
 
-    for release_group in release_groups:
+    release_groups = queryset.all()
+
+    page = request.GET.get("page")
+    page_size = 10
+    paginator = Paginator(release_groups, page_size)
+
+    release_groups_current_page = paginator.get_page(page)
+
+    for release_group in release_groups_current_page:
         # The user triggers a potential query for a newer cover art for the release groups.
         tasks.update_cover_art_by_mbid.delay(release_group.mbid)
 
-    release_groups = list(release_groups)
-    offset = offset + PER_PAGE if len(release_groups) == PER_PAGE else None
     return render(
         request,
         "artist.html",
         {
             "artist": artist,
-            "release_groups": release_groups,
-            "offset": offset,
-            "PER_PAGE": PER_PAGE,
+            "release_groups": release_groups_current_page,
+            "page": page,
+            "paginator": paginator,
             "user_has_artist": user_has_artist,
             "show_stars": show_stars,
         },
@@ -303,7 +303,7 @@ def feed(request):
         return HttpResponseNotFound()
 
     LIMIT = 40
-    releases = list(ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0, feed=True))
+    releases = ReleaseGroup.get(user=profile.user, feed=True)[:LIMIT]
     date_iso8601 = None
     if releases:
         date_iso8601 = max(r.date_iso8601() for r in releases)
@@ -348,7 +348,7 @@ class MuspyFeed(ICalFeed):
 
     def items(self):
         items = []
-        queryset = ReleaseGroup.get(user=self.profile.user, limit=self.limit, offset=0, feed=True)
+        queryset = ReleaseGroup.get(user=self.profile.user, feed=True)[: self.limit]
         for release_group in queryset:
             # month/day aren't always present.
             month = (release_group.date // 100) % 100
@@ -442,20 +442,24 @@ def index(request):
 
 @login_required
 def releases(request):
-    PER_PAGE = 10
-    limit = PER_PAGE + 1
-    offset = int(request.GET.get("offset", 0))
-    release_groups = list(ReleaseGroup.get(user=request.user, limit=limit, offset=offset))
-    offset = offset + PER_PAGE if len(release_groups) > PER_PAGE else None
+    queryset = ReleaseGroup.get(user=request.user)
+
+    release_groups = queryset.all()
+
+    page = request.GET.get("page")
+    page_size = 10
+    paginator = Paginator(release_groups, page_size)
+
+    release_groups_current_page = paginator.get_page(page)
 
     return render(
         request,
         "releases.html",
         {
-            "release_groups": release_groups[:PER_PAGE],
-            "offset": offset,
-            "PER_PAGE": PER_PAGE,
-            "next": next,
+            "release_groups": release_groups_current_page,
+            "page": page,
+            "page_size": page_size,
+            "paginator": paginator,
             "show_stars": True,
         },
     )

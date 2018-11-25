@@ -17,8 +17,16 @@
       <p>Loading releases... Please refresh your browser in a moment.</p>
     </div>
   {% endif %}
-  {% if offset %}
-    <p><a href="{{ request.path }}?offset={{ offset }}" rel="noindex">Next {{ PER_PAGE }} &raquo;</a></p>
+  {% if paginator.num_pages > 1 %}
+    <p>
+      {% if release_groups.has_previous %}
+        <a href="{{ request.path }}?page={{ release_groups.previous_page_number }}" rel="noindex">&laquo; Page {{ release_groups.previous_page_number }}</a>
+      {% endif %}
+      {% if release_groups.has_previous and release_groups.has_next%} | {% endif %}
+      {% if release_groups.has_next %}
+        <a href="{{ request.path }}?page={{ release_groups.next_page_number }}" rel="noindex">Page {{ release_groups.next_page_number }} &raquo;</a>
+      {% endif %}
+    </p>
   {% endif %}
 
 {% endblock content %}
