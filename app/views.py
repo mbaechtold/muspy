@@ -390,7 +390,7 @@ class MuspyFeed(ICalFeed):
         return f"{str(item.id)}@{self.hostname}"
 
     def item_link(self, item):
-        return self.request.build_absolute_uri("/")
+        return item.artist.get_absolute_url()
 
 
 def forbidden(request):
