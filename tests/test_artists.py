@@ -39,4 +39,4 @@ class TestArtists(WebTest):
 
         # The user now follows the artist he just added.
         user = response.context["user"]
-        assert user.userartist_set.first().artist.name == "Nerf Herder"
+        assert user.favorite_artists.first().artist.name == "Nerf Herder"

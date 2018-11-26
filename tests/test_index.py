@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django_webtest import WebTest
 from freezegun import freeze_time
 from model_mommy import mommy
@@ -5,12 +7,14 @@ from model_mommy import mommy
 from app import models
 
 
+@patch("app.views.tasks.get_release_groups_by_artist.delay")
+@patch("app.views.tasks.update_cover_art_by_mbid.delay")
 class TestIndex(WebTest):
     """
     Test the index view.
     """
 
-    def test_index_does_not_show_future_releases(self):
+    def test_index_does_not_show_future_releases(self, *args, **kwargs):
         """
         Test the releases shown on the index view. Future releases must not be shown on the index view.
         """
@@ -57,7 +61,7 @@ class TestIndex(WebTest):
 
         freezer.stop()
 
-    def test_index_does_not_show_deleted_releases(self):
+    def test_index_does_not_show_deleted_releases(self, *args, **kwargs):
 
         # Create the artist we can work with in the test.
         nerf_herder = mommy.make(
@@ -96,7 +100,7 @@ class TestIndex(WebTest):
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )
 
-    def test_index_only_shows_ten_releases(self):
+    def test_index_only_shows_ten_releases(self, *args, **kwargs):
         # Create 11 albums.
         for i in range(11):
             mommy.make("app.ReleaseGroup", name=str(i), date=20001231, is_deleted=False)

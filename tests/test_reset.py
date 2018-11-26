@@ -1,3 +1,4 @@
+from django.test import RequestFactory
 from django_webtest import WebTest
 from model_mommy import mommy
 
@@ -74,7 +75,8 @@ class TestResetCode(WebTest):
         john_doe = mommy.make("User", email="john@doe.local")
 
         # Generate a reset code.
-        john_doe.profile.send_reset_email()
+        request = RequestFactory().get("/reset")
+        john_doe.profile.send_reset_email(request)
 
         # The user clicks the link in the email.
         response = self.app.get("/reset?code={}".format(john_doe.profile.reset_code))

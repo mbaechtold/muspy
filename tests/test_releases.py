@@ -1,20 +1,24 @@
+from unittest.mock import patch
+
 from django_webtest import WebTest
 from model_mommy import mommy
 
 from app import models
 
 
+@patch("app.views.tasks.get_release_groups_by_artist.delay")
+@patch("app.views.tasks.update_cover_art_by_mbid.delay")
 class TestReleases(WebTest):
     """
     Test the releases view.
     """
 
-    def test_with_anonymous_user(self):
+    def test_with_anonymous_user(self, *args, **kwargs):
         response = self.app.get("/releases", expect_errors=True)
         assert response.status == "302 Found"
         assert response.url == "/signin?next=/releases"
 
-    def test_show_releases_of_the_artists_a_user_follows(self):
+    def test_show_releases_of_the_artists_a_user_follows(self, *args, **kwargs):
         # Create a user we can work with in the test.
         john = mommy.make("User", username="john.doe")
 
@@ -53,7 +57,7 @@ class TestReleases(WebTest):
             [node.text.strip() for node in response.html.find_all("td", "release_info")],
         )
 
-    def test_starred_releases_on_top(self):
+    def test_starred_releases_on_top(self, *args, **kwargs):
         # Create a user we can work with in the test.
         john = mommy.make("User", username="john.doe")
 

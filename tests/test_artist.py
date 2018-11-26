@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django_webtest import WebTest
 from freezegun import freeze_time
 from model_mommy import mommy
@@ -8,14 +10,18 @@ class TestArtist(WebTest):
     Test the artist detail view.
     """
 
-    def test_non_existing_artist(self):
+    @patch("app.views.tasks.get_release_groups_by_artist.delay")
+    @patch("app.views.tasks.update_cover_art_by_mbid.delay")
+    def test_non_existing_artist(self, *args, **kwargs):
         """
         The artist view also renders future releases.
         """
         response = self.app.get("/artist/000-0000-000", expect_errors=True)
         assert response.status == "404 Not Found"
 
-    def test_index_shows_future_releases(self):
+    @patch("app.views.tasks.get_release_groups_by_artist.delay")
+    @patch("app.views.tasks.update_cover_art_by_mbid.delay")
+    def test_index_shows_future_releases(self, *args, **kwargs):
         """
         The artist view also renders future releases.
         """
@@ -64,16 +70,25 @@ class TestArtist(WebTest):
 
         freezer.stop()
 
-    def test_blacklisted_artist(self):
+    @patch("app.views.tasks.get_release_groups_by_artist.delay")
+    @patch("app.views.tasks.update_cover_art_by_mbid.delay")
+    def test_blacklisted_artist(self, *args, **kwargs):
         blacklisted_artist = mommy.make("app.Artist", mbid="89ad4ac3-39f7-470e-963a-56509c546377")
         response = self.app.get("/artist/{}".format(blacklisted_artist.mbid), expect_errors=True)
         assert response.status == "404 Not Found"
 
-    def test_invalid_offset(self):
+    @patch("app.views.tasks.get_release_groups_by_artist.delay")
+    @patch("app.views.tasks.update_cover_art_by_mbid.delay")
+    def test_invalid_offset(self, *args, **kwargs):
         nerf_herder = mommy.make(
             "app.Artist", name="Nerf Herder", mbid="da66103a-1307-400d-8261-89d856126867"
         )
-        response = self.app.get(
-            "/artist/{}?offset=boom".format(nerf_herder.mbid), expect_errors=True
-        )
-        assert response.status == "404 Not Found"
+        response = self.app.get("/artist/{}?page=boom".format(nerf_herder.mbid), expect_errors=True)
+        assert response.status == "200 OK"
+        assert response.context["paginator"].num_pages == 1
+        assert response.context["release_groups"].number == 1
+
+        response = self.app.get("/artist/{}?page=99".format(nerf_herder.mbid), expect_errors=True)
+        assert response.status == "200 OK"
+        assert response.context["paginator"].num_pages == 1
+        assert response.context["release_groups"].number == 1

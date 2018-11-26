@@ -1,3 +1,4 @@
+import pytest
 from django_webtest import TransactionWebTest
 from freezegun import freeze_time
 from model_mommy import mommy
@@ -6,6 +7,7 @@ from app import models
 from daemon import releases
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 class TestDaemon(TransactionWebTest):
     """
     Test the "artists remove" view.

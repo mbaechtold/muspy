@@ -36,7 +36,7 @@ class TestArtistsAdd(WebTest):
             "The artist is special-purpose and cannot be added",
             response.html.find("div", "message error").text.strip(),
         )
-        assert User.objects.get(username="john.doe").userartist_set.count() == 0
+        assert User.objects.get(username="john.doe").favorite_artists.count() == 0
 
     def test_add_artist(self):
         john = mommy.make("User", username="john.doe")
@@ -56,4 +56,4 @@ class TestArtistsAdd(WebTest):
         self.assertEqual(
             "Nerf Herder has been added!", response.html.find("div", "message success").text.strip()
         )
-        assert User.objects.get(username="john.doe").userartist_set.count() == 1
+        assert User.objects.get(username="john.doe").favorite_artists.count() == 1

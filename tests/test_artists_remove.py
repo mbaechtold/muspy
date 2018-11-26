@@ -72,4 +72,4 @@ class TestArtistsRemove(WebTest):
         self.assertEqual(
             "Removed 1 artist.", response.html.find("div", "message success").text.strip()
         )
-        assert john.userartist_set.count() == 0
+        assert john.favorite_artists.count() == 0

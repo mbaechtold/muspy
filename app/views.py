@@ -105,7 +105,13 @@ def artist(request, mbid):
         # The user triggers a potential query for a newer cover art for the release groups.
         tasks.update_cover_art_by_mbid.delay(release_group.mbid)
 
-    user_artists = [user_artist.artist for user_artist in request.user.favorite_artists.all()]
+    recommended_artists = []
+    if request.user.is_authenticated:
+        user_artists = [user_artist.artist for user_artist in request.user.favorite_artists.all()]
+        recommended_artists = [
+            artist for artist in artist.similar_artists.all() if artist not in user_artists
+        ][:10]
+
     return render(
         request,
         "artist.html",
@@ -116,9 +122,7 @@ def artist(request, mbid):
             "paginator": paginator,
             "user_has_artist": user_has_artist,
             "show_stars": show_stars,
-            "recommended_artists": [
-                artist for artist in artist.similar_artists.all() if artist not in user_artists
-            ][:10],
+            "recommended_artists": recommended_artists,
         },
     )
 
