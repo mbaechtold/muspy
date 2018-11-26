@@ -154,9 +154,11 @@ def get_similar_artists():
     """
 
     # Randomly get an artist not having any similar artist.
+    # Only update artists having followers.
     artist = (
         models.Artist.objects.annotate(num_similar_artists=Count("similar_artists"))
-        .filter(num_similar_artists=0)
+        .annotate(num_followers=Count("userartist"))
+        .filter(num_similar_artists=0, num_followers__gte=1)
         .order_by("?")
         .first()
     )
