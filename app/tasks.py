@@ -25,8 +25,14 @@ def trigger_release_update_for_outdated_artist():
     """
     This task can be run as a periodic task. It will then trigger an asynchronous check
     for new releases for the artist we checked last.
+    Only artists having followers are considered.
     """
-    artist = models.Artist.objects.all().order_by("last_check_for_releases").first()
+    artist = (
+        models.Artist.objects.annotate(num_followers=Count("userartist"))
+        .filter(num_followers__gte=1)
+        .order_by("last_check_for_releases")
+        .first()
+    )
     if not artist:
         return "Not checking for new releases because all artists are rather fresh."
 
