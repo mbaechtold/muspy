@@ -19,6 +19,7 @@ import os
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.views import LoginView
+from django.urls import include
 from django.urls import path
 from django.views.generic.base import RedirectView
 from django.views.generic.base import TemplateView
@@ -58,6 +59,7 @@ urlpatterns = [
     url(r"^star$", views.star),
     url(r"^unsubscribe$", views.unsubscribe),
     url(r"blog|\.php", views.forbidden),  # Hello, vulnerability scan bots!
+    path("api/1/", include("api.urls", namespace="api")),
 ]
 
 admin_url_path = os.environ.get("DJANGO_ADMIN_URL")
@@ -65,10 +67,3 @@ if admin_url_path:
     # Ensure a trailing slash.
     admin_url_path = admin_url_path.strip("/") + "/"
     urlpatterns += [path(admin_url_path, admin.site.urls)]
-
-
-# "django-piston" relies on "django.utils.simplejson", which has been removed in Django 1.5.
-# Since it's no longer maintained, the API will have to be rewritten entirely.
-# urlpatterns += patterns('',
-#     (r'^api/1/', include('api.urls')),
-# )

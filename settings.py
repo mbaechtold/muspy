@@ -182,6 +182,7 @@ class Base(Configuration):
         "django.contrib.sites",
         "django_extensions",
         "storages",
+        "rest_framework",
         "app.apps.MuspyApp",
     ]
 
@@ -253,6 +254,13 @@ class Base(Configuration):
     @property
     def LASTFM_CLIENT(self):
         return get_lastfm_network(self.BASE_DIR)
+
+    REST_FRAMEWORK = {
+        "DEFAULT_AUTHENTICATION_CLASSES": (
+            "rest_framework.authentication.BasicAuthentication",
+            "rest_framework.authentication.SessionAuthentication",
+        )
+    }
 
 
 class Development(CeleryMixin, Base):

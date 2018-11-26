@@ -34,23 +34,6 @@ class ApiResource(Resource):
         self.csrf_exempt = getattr(self.handler, "csrf_exempt", True)
 
 
-class ArtistHandler(AnonymousBaseHandler):
-    allowed_methods = ("GET",)
-
-    def read(self, request, mbid):
-        try:
-            artist = Artist.objects.get(mbid=mbid)
-        except Artist.DoesNotExist:
-            return rc.NOT_HERE
-
-        return {
-            "mbid": artist.mbid,
-            "name": artist.name,
-            "sort_name": artist.sort_name,
-            "disambiguation": artist.disambiguation,
-        }
-
-
 class ArtistsHandler(BaseHandler):
     allowed_methods = ("GET", "PUT", "DELETE")
 
