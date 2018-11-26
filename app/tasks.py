@@ -53,6 +53,8 @@ def update_cover_art():
 
 @shared_task(name="Update cover art of given artist")
 def update_cover_art_by_mbid(mbid=None):
+    if not mbid:
+        return "No mbid provided. Aborting."
     release_group = models.ReleaseGroup.objects.get(mbid=mbid)
 
     # Wait some time between the checks.
@@ -79,6 +81,8 @@ def update_cover_art_by_mbid(mbid=None):
 
 @shared_task(name="Get release groups of the given artist")
 def get_release_groups_by_artist(artist_mbid=None):
+    if not artist_mbid:
+        return "No mbid provided. Aborting."
     artist = models.Artist.objects.get(mbid=artist_mbid)
 
     # Wait some time between the checks.
