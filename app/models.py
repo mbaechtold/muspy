@@ -126,9 +126,6 @@ class Artist(models.Model):
             # The artist was added while we were querying MB.
             return cls.objects.get(mbid=mbid)
 
-        # Fetch a few release when a new artist has been added.
-        artist.get_release_groups(limit=11)
-
         return artist
 
     def get_release_groups(self, limit=100_000):

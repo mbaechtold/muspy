@@ -255,6 +255,9 @@ def artists_add(request):
 
     UserArtist.add(request.user, artist)
 
+    # Trigger the asynchronous fetching of releases.
+    tasks.get_release_groups_by_artist.delay(artist.mbid)
+
     search = request.GET.get("search", "")
     UserSearch.remove(request.user, [search])
 
