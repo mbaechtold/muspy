@@ -453,9 +453,7 @@ def import_artists(request):
 
 
 def index(request):
-    today = int(date.today().strftime("%Y%m%d"))
-    releases = ReleaseGroup.get_calendar(today, 10, 0)
-    return render(request, "index.html", {"is_index": True, "releases": releases})
+    return render(request, "index.html", {"is_index": True, "signin_form": SignInForm()})
 
 
 @login_required
