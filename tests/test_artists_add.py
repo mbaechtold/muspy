@@ -1,8 +1,11 @@
+from unittest.mock import patch
+
 from django.contrib.auth.models import User
 from django_webtest import WebTest
 from model_mommy import mommy
 
 
+@patch("app.views.tasks.get_release_groups_by_artist.delay")
 class TestArtistsAdd(WebTest):
     """
     Test the "artists add" view.
@@ -12,12 +15,12 @@ class TestArtistsAdd(WebTest):
 
     csrf_checks = False
 
-    def test_with_anonymous_user(self):
+    def test_with_anonymous_user(self, *args, **kwargs):
         response = self.app.get("/artists-add", expect_errors=True)
         assert response.status == "302 Found"
         assert response.url == "/signin?next=/artists-add"
 
-    def test_add_blacklisted_artist(self):
+    def test_add_blacklisted_artist(self, *args, **kwargs):
         john = mommy.make("User", username="john.doe")
         john.profile.email_activated = True
         john.profile.notify = True
@@ -38,7 +41,7 @@ class TestArtistsAdd(WebTest):
         )
         assert User.objects.get(username="john.doe").favorite_artists.count() == 0
 
-    def test_add_artist(self):
+    def test_add_artist(self, *args, **kwargs):
         john = mommy.make("User", username="john.doe")
         john.profile.email_activated = True
         john.profile.notify = True
