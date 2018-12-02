@@ -190,7 +190,7 @@ td.cover {
 }
 
 td.release_info {
-    border-bottom: 1px dotted #CCCCCC;
+    border-top: 1px dotted #CCCCCC;
 }
 
 a.star {
