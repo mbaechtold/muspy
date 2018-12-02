@@ -1,3 +1,15 @@
 {% extends "base_releases.html" %}
 {% block title %}{{ artist.name }} Releases{% endblock %}
-{% block header %}{{ artist.name }} Releases{% endblock %}
+{% block header %}{{ artist.name }}{% endblock %}
+
+{% block content %}
+
+  {% if not user.is_authenticated %}
+    <p>
+      Do you want to be notified, when {{ artist.name }} has a new release? <a href="/signup">Sign up now!</a>
+    </p>
+  {% endif %}
+
+  {{ block.super }}
+
+{% endblock %}

@@ -3,8 +3,11 @@
 
 {% block content %}
   {% if artist and user.is_authenticated and not user_has_artist %}
-    <p><a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{% static 'add.gif' %}" alt="+"/></a>
-      <a href="/artists-add?id={{ artist.mbid }}">Click to follow this artist</a></p>
+    <p>
+      Do you want to be notified, when {{ artist.name }} has a new release?
+      <a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="{% static 'add.gif' %}" alt="+"/></a>
+      <a href="/artists-add?id={{ artist.mbid }}">Click to follow this artist</a>
+    </p>
   {% endif %}
   {% if recommended_artists %}
     <h2>Similar artists you may also want to follow:
