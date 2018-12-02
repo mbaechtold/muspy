@@ -26,6 +26,7 @@ def trigger_release_update_for_outdated_artist():
     This task can be run as a periodic task. It will then trigger an asynchronous check
     for new releases for the artist we checked last.
     Only artists having followers are considered.
+    The followers are then notified about new releases.
     """
     artist = (
         models.Artist.objects.annotate(num_followers=Count("userartist"))
@@ -36,8 +37,7 @@ def trigger_release_update_for_outdated_artist():
     if not artist:
         return "Not checking for new releases because all artists are rather fresh."
 
-    # Make sure the following call implements locking in order not to hammer MusicBrainz.
-    get_release_groups_by_artist.delay(artist_mbid=artist.mbid)
+    get_release_groups_by_artist.delay(artist_mbid=artist.mbid, notify_followers=True)
 
     return f"Periodic check for new releases triggered for Artist#{artist.id}."
 
@@ -86,7 +86,7 @@ def update_cover_art_by_mbid(mbid=None):
 
 
 @shared_task(name="Get release groups of the given artist")
-def get_release_groups_by_artist(artist_mbid=None):
+def get_release_groups_by_artist(artist_mbid=None, notify_followers=False):
     if not artist_mbid:
         return "No mbid provided. Aborting."
     artist = models.Artist.objects.get(mbid=artist_mbid)
@@ -94,7 +94,7 @@ def get_release_groups_by_artist(artist_mbid=None):
     # Wait some time between the checks.
     if artist.last_check_for_releases:
         backoff = 3600 * 7  # Seconds
-        seconds_since_last_check = (now() - artist.last_check_for_releases).seconds
+        seconds_since_last_check = (now() - artist.last_check_for_releases).total_seconds()
         if seconds_since_last_check < backoff:
             return (
                 f"Fetching release groups for Artist#{artist.id} is locked. "
@@ -108,9 +108,16 @@ def get_release_groups_by_artist(artist_mbid=None):
     # lots of users on the website.
     time.sleep(randint(2, 10))
 
-    artist.get_release_groups()
+    celery_logger.info(f"Fetching release groups for Artist#{artist.id}.")
+    release_groups = artist.get_release_groups()
 
-    return f"Fetching release groups for Artist#{artist.id}."
+    if notify_followers:
+        for release_group in release_groups:
+            user_artists = models.UserArtist.objects.filter(artist=release_group.artist)
+            for user_artist in user_artists:
+                notify_user(user_artist.user.pk, release_group.pk)
+
+    return f"Finished fetching release groups for Artist#{artist.id}."
 
 
 @shared_task(name="Import artists from Last.fm for the given username")
@@ -143,14 +150,8 @@ def notify_user(user_pk, release_group_pk):
     """
     user = User.objects.get(pk=user_pk)
     release_group = models.ReleaseGroup.objects.get(pk=release_group_pk)
-    user.profile.send_email(
-        subject="[muspy] New Release: %s - %s" % (release_group.artist.name, release_group.name),
-        text_template="email/release.txt",
-        html_template="email/release.html",
-        release=release_group,
-        username=user.username,
-        root="https://muspy.baechtold.me/",
-    )
+    notified = user.profile.maybe_send_new_release_email(release_group)
+    return f"Notifying User#{user.pk} about new ReleaseGroup#{release_group.pk}: {notified}."
 
 
 @shared_task(name="Get similar artists (periodic task)")

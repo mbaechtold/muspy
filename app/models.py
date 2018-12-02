@@ -134,6 +134,7 @@ class Artist(models.Model):
         better be called asynchronously. Make sure to not call this method too frequently or you get
         banned from MusicBrainz.
         """
+        new_release_groups = []
         release_groups = mb.get_release_groups(self.mbid, limit=limit, offset=0)
         if release_groups:
             for rg_data in release_groups:
@@ -149,8 +150,10 @@ class Artist(models.Model):
                     release_group.type = rg_data["type"]
                     release_group.date = release_date
                     release_group.save()
+                    if created:
+                        new_release_groups.append(release_group)
 
-        return True
+        return new_release_groups
 
     @classmethod
     def get_by_user(cls, user):
@@ -538,6 +541,22 @@ class UserProfile(models.Model):
             text_template="email/reset.txt",
             html_template=None,
             reset_url=request.build_absolute_uri(reverse("reset")) + "?code=" + code,
+        )
+
+    def maybe_send_new_release_email(self, release_group):
+        if not self.email_activated or not self.notify:
+            return False
+        if not release_group.type in self.get_types():
+            return False
+        return self.send_email(
+            subject="[muspy] New Release: {} - {}".format(
+                release_group.artist.name, release_group.name
+            ),
+            text_template="email/release.txt",
+            html_template="email/release.html",
+            release=release_group,
+            username=self.user.username,
+            root="https://muspy.baechtold.me/",
         )
 
     def unsubscribe(self):

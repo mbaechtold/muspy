@@ -83,7 +83,7 @@ def artist(request, mbid):
         return HttpResponseNotFound()
 
     # The user triggers a potential query for new release groups.
-    tasks.get_release_groups_by_artist.delay(artist_mbid=artist.mbid)
+    tasks.get_release_groups_by_artist.delay(artist_mbid=artist.mbid, notify_followers=True)
 
     user_has_artist = request.user.is_authenticated and UserArtist.get(request.user, artist)
     if user_has_artist:
@@ -256,7 +256,7 @@ def artists_add(request):
     UserArtist.add(request.user, artist)
 
     # Trigger the asynchronous fetching of releases.
-    tasks.get_release_groups_by_artist.delay(artist.mbid)
+    tasks.get_release_groups_by_artist.delay(artist.mbid, notify_followers=False)
 
     search = request.GET.get("search", "")
     UserSearch.remove(request.user, [search])
