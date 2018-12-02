@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Import{% endblock %}
-{% block header %}Import Artists{% endblock %}
+{% block header %}Import Artists from Last.fm{% endblock %}
 {% block content %}
 
-<h2>Import from Last.fm</h2>
+<p>You can easily <strong>import the artists from your Last.fm</strong> account.</p>
 
 <form method="post" action="/import">
 {% csrf_token %}
 <input type="hidden" name="type" value="last.fm"/>
 <p>Your Last.fm user name: <input type="text" id="username" name="username"/></p>
-<p><input type="submit" value="Import" /> top
+<p>Only import to the top
 <select name="count">
 <option value="50">50</option>
 <option value="100" selected="selected">100</option>
@@ -26,6 +26,7 @@ artists
 <option value="7day">in the last 7 days</option>
 </select>
 </p>
+<p><input type="submit" value="Import from Last.fm" /></p>
 </form>
 
 {% endblock content %}

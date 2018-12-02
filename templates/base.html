@@ -24,6 +24,7 @@
           &bull; <a href="/feed?id={{ user.username }}"><img src="{% static 'feed.png' %}" alt="RSS" title="Subscribe in a reader"/></a>
           <a href="/ical?id={{ user.username }}"><img src="{% static 'ical.gif' %}" alt="iCal" title="Export to iCal"/></a>
           <a href="/releases">Releases</a>
+          &bull; <a href="/import">Import from Last.fm</a>
         {% else %}
           <div class="share">
             <div class="facebook">
