@@ -1,12 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Email activation{% endblock %}
 {% block header %}Email activation{% endblock %}
+{% block email_confirmation %}{% endblock %}
+
 {% block content %}
 
-<p>An email has been sent to {{ user.email }} with details on
-how to activate your email address.</p>
+<p>Your account is awaiting email activation. We will not send you any notification
+about new releases until you have activated your email address.</p>
 
-<p>You will receive an email in your inbox. If you don't receive your activation
-email within a couple of minutes, check your spam/junk email folders.</p>
+<p>Please click the activation link in the email we have sent to <strong>{{ user.email }}</strong>
+when you signed up.</p>
+
+<h2>Resend the activation email</h2>
+
+<p>Click the button below and we will send another activation email to <strong>{{ user.email }}</strong>.
+The activation email should arrive within a couple of minutes. Please check your spam/junk email folders
+if you don't receive the email.</p>
+
+<form method="post" action="/activate">
+{% csrf_token %}
+<input type="submit" value="Send new activation email" /></td>
+</form>
+
+<h2>Change email address</h2>
+
+<p>You can change your email address on the <a href="/settings">settings</a> page.</p>
 
 {% endblock content %}

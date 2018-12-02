@@ -98,12 +98,22 @@ h2 {
     border: solid 1px #0000CC;
 }
 
-.info, .success {
+.success {
     background-color: #CCFFCC;
     border: solid 1px #00CC00;
 }
 
-.warning, .error {
+.warning {
+    background-color: #FFEA8F;
+    border: solid 1px #FFC32B;
+}
+
+.info {
+    background-color: #AFE7FF;
+    border: solid 1px #1B71E8;
+}
+
+.error {
     background-color: #FFCCCC;
     border: solid 1px #CC0000;
 }

@@ -52,6 +52,14 @@ logger = logging.getLogger("app")
 
 
 def activate(request):
+
+    # POST
+    if request.method == "POST":
+        request.user.profile.send_activation_email(request)
+        messages.success(request, "We have sent you an email with further instructions.")
+        return redirect("/activate")
+
+    # GET
     if "code" in request.GET:
         if UserProfile.activate(request.GET["code"]):
             messages.success(request, "Your email address has been activated.")
@@ -62,14 +70,11 @@ def activate(request):
         return redirect("/")
 
     if not request.user.is_authenticated:
-        messages.error(request, "You need to sign in to activate your email address.")
         return redirect("/")
-
-    if request.user.profile.email_activated:
+    elif request.user.profile.email_activated:
         messages.info(request, "Your email address is already active.")
         return redirect("/")
 
-    request.user.profile.send_activation_email(request)
     return render(request, "activate.html")
 
 

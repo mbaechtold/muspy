@@ -462,9 +462,9 @@ class UserProfile(models.Model):
     notify_remix = models.BooleanField(default=True)
     notify_other = models.BooleanField(default=True)
     email_activated = models.BooleanField(default=False)
-    activation_code = models.CharField(max_length=code_length)
-    reset_code = models.CharField(max_length=code_length)
-    legacy_id = models.IntegerField(null=True)
+    activation_code = models.CharField(max_length=code_length, blank=True)
+    reset_code = models.CharField(max_length=code_length, blank=True)
+    legacy_id = models.IntegerField(null=True, blank=True)
 
     def get_types(self):
         """Return the list of release types the user wants to follow."""
