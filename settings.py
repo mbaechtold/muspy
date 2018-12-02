@@ -180,8 +180,6 @@ class Base(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "django.contrib.sites",
-        "django_extensions",
-        "storages",
         "app.apps.MuspyApp",
     ]
 
@@ -282,18 +280,11 @@ class Production(SentryMixin, CeleryMixin, Base):
         "www.muspy.com",
     ]
 
-    AWS_ACCESS_KEY_ID = values.Value("your-spaces-access-key", environ_prefix="")
-    AWS_LOCATION = values.Value("your-spaces-files-folder", environ_prefix="")
-    AWS_SECRET_ACCESS_KEY = values.Value("your-spaces-secret-access-key", environ_prefix="")
-    AWS_STORAGE_BUCKET_NAME = values.Value("your-storage-bucket-name", environ_prefix="")
-    AWS_DEFAULT_ACL = None
-
-    AWS_S3_ENDPOINT_URL = values.Value("https://ams3.digitaloceanspaces.com", environ_prefix="")
-    AWS_S3_REGION_NAME = values.Value("ams3", environ_prefix="")
-    AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
-
-    STATIC_URL = "https://%s/%s/" % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
-    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    @property
+    def MIDDLEWARE(self):
+        middleware = super().MIDDLEWARE
+        middleware.insert(0, "whitenoise.middleware.WhiteNoiseMiddleware")
+        return middleware
 
     @property
     def LOGGING(self):
