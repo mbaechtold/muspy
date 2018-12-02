@@ -24,7 +24,7 @@ class TestUserAction(WebTest):
         """
         An authenticated user must be able to sign out and access the settings form.
         """
-        response = self.app.get("/", user="john.doe")
+        response = self.app.get("/artists", user="john.doe")
         assert response.status == "200 OK"
         assert response.context["user"].is_anonymous == False
         assert response.context["user"].username == "john.doe"

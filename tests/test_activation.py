@@ -45,15 +45,14 @@ class TestActivation(WebTest):
         john_doe.set_password("very_secret")
 
         # The user signs in.
-        response = self.app.get("/", user="john.doe")
+        response = self.app.get("/artists", user="john.doe")
         assert response.context["user"].is_anonymous == False
         assert response.context["user"] == john_doe
 
         # The user requests an activation code.
         response = self.app.get("/activate")
         form = response.form
-        response = form.submit().follow()
-        assert response.status == "200 OK"
+        form.submit()
 
         # The email address is not yet activated.
         john_doe.profile.refresh_from_db()
@@ -73,14 +72,10 @@ class TestActivation(WebTest):
         john_doe.profile.save()
 
         # The user signs in and manually opens the activation view.
-        response = self.app.get("/activate", user="john.doe")
+        response = self.app.get("/activate", user="john.doe", auto_follow=True)
 
         # The user won't see the activation view, because its email is already activated.
-        assert response.status == "302 Found"
-        assert response.url == "/"
-
         # The user sees a message instead.
-        response = response.follow()
         assert response.status == "200 OK"
         error_message = "Your email address is already active."
         assert response.html.find("div", "message").find("p").text == error_message

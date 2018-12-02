@@ -453,6 +453,8 @@ def import_artists(request):
 
 
 def index(request):
+    if request.user.is_authenticated:
+        return redirect("/artists", permanent=False)
     return render(request, "index.html", {"is_index": True, "signin_form": SignInForm()})
 
 
