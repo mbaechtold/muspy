@@ -1,3 +1,4 @@
+{% load i18n %}
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="container">
     <div class="navbar-brand">
@@ -13,12 +14,12 @@
     <div id="navBarMain" class="navbar-menu">
       <div class="navbar-start">
         {% if user.is_authenticated %}
-          <a class="navbar-item" href="/artists">Artists</a>
-          <a class="navbar-item" href="/releases">Releases</a>
+          <a class="navbar-item" href="/artists">{% trans "Artists" %}</a>
+          <a class="navbar-item" href="/releases">{% trans "Releases" %}</a>
           <div class="navbar-item has-dropdown is-hoverable">
-            <a class="navbar-link">Import</a>
+            <a class="navbar-link">{% trans "Import" %}</a>
             <div class="navbar-dropdown">
-              <a class="navbar-item" href="/import">From Last.fm</a>
+              <a class="navbar-item" href="/import">{% trans "From Last.fm" %}</a>
             </div>
           </div>
         {% else %}
@@ -45,13 +46,13 @@
               <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">{{ request.user.email }}</a>
                 <div class="navbar-dropdown">
-                  <a class="navbar-item" href="/settings">Settings</a>
-                  <a class="navbar-item" href="/signout">Sign out</a>
+                  <a class="navbar-item" href="/settings">{% trans "Settings" %}</a>
+                  <a class="navbar-item" href="/signout">{% trans "Sign out" %}</a>
                 </div>
               </div>
             {% else %}
-              <a class="button is-dark" href="/signin">Sign in</a>
-              <a class="button is-light" href="/signup">Sign up</a>
+              <a class="button is-dark" href="/signin">{% trans "Sign in" %}</a>
+              <a class="button is-light" href="/signup">{% trans "Sign up" %}</a>
             {% endif %}
           </div>
         </div>

@@ -1,14 +1,15 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block before_main_section %}
   <section class="hero is-primary">
     <div class="hero-body">
       <div class="container">
         <h1 class="title">
-          Welcome to muspy
+          {% trans "Welcome to muspy" %}
         </h1>
         <h2 class="subtitle">
-          The easiest way to follow your favourite artists!
+          {% trans "The easiest way to follow your favourite artists!" %}
         </h2>
       </div>
     </div>

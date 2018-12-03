@@ -21,6 +21,7 @@ import dj_database_url
 import dj_email_url
 from configurations import Configuration
 from configurations import values
+from django.utils.translation import gettext_lazy as _
 
 from app.lastfm import get_lastfm_network
 
@@ -139,7 +140,10 @@ class Base(Configuration):
 
     USE_TZ = True
     TIME_ZONE = "UTC"
-    USE_I18N = False
+    USE_I18N = True
+    USE_L10N = True
+    LANGUAGES = [("en", _("English")), ("de", _("German"))]
+    LOCALE_PATHS = [os.path.join(BASE_DIR, "locales")]
     LOGIN_REDIRECT_URL = "/artists"
     LOGIN_URL = "/signin"
     AUTH_PROFILE_MODULE = "app.UserProfile"
@@ -165,8 +169,9 @@ class Base(Configuration):
     ]
     AUTHENTICATION_BACKENDS = ("app.backends.EmailAuthBackend",)
     MIDDLEWARE = [
-        "django.middleware.common.CommonMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.middleware.locale.LocaleMiddleware",
+        "django.middleware.common.CommonMiddleware",
         "django.middleware.csrf.CsrfViewMiddleware",
         "django.contrib.auth.middleware.AuthenticationMiddleware",
         "django.contrib.messages.middleware.MessageMiddleware",
