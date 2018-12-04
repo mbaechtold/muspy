@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Sign up" %}{% endblock %}
+{% block header %}{% trans "Welcome to muspy" %}{% endblock %}
+{% block email_confirmation %}{% endblock %}
+
+{% block content %}
+
+  <p>{% trans "Thank you for signing up. We have sent you an email containing a link for the email activation." %}</p>
+
+  <h2>{% trans "Whats' next?" %}</h2>
+
+  <ol>
+    <li>{% trans "Start adding your favorite artists" %}</li>
+    <li>{% trans "Confirm your email address" %}</li>
+    <li>{% trans "Get notified when your favorite artists release a new recording" %}</li>
+  </ol>
+
+  <p>{% trans "Ok, I'm ready!" %} <a href="{% url "artists" %}">&raquo; {% trans "Let's get started!" %}</a></p>
+
+  <p>{% trans "Cheers! Your friendly team at <i>muspy</i>." %}</p>
+
+{% endblock %}

@@ -27,7 +27,8 @@ class TestSignUp(WebTest):
         assert response.status == "200 OK"
 
         # After signup, the user is redirected.
-        assert response.request.url == "http://testserver/artists"
+        # TODO: Why no "response.url"?
+        assert response.request.url == "http://testserver/signup-complete"
 
         # A user has been created and he is authenticated.
         assert User.objects.count() == 1
