@@ -23,21 +23,24 @@ class TestSignUp(WebTest):
         form = response.form
         form["email"] = "john@doe.local"
         form["password"] = "verysecret"
-        response = form.submit().follow()
-        assert response.status == "200 OK"
+        response = form.submit()
 
-        # After signup, the user is redirected.
-        assert response.request.url == "http://testserver/artists"
+        # After signup, a redirect is going to happen.
+        assert response.status == "302 Found"
+        assert response.url == "/signup-complete"
 
-        # A user has been created and he is authenticated.
+        # A user has been created.
         assert User.objects.count() == 1
         john_doe = User.objects.first()
         assert john_doe.is_active == True
-        assert response.context["user"].is_anonymous == False
-        assert response.context["user"] == john_doe
 
         # A user profile has been created automatically.
         assert UserProfile.objects.count() == 1
 
         # But the email address is not confirmed yet.
         assert john_doe.profile.email_activated == False
+
+        # Finally the user is being redirected and authenticated.
+        response = response.follow()
+        assert response.context["user"].is_anonymous == False
+        assert response.context["user"] == john_doe

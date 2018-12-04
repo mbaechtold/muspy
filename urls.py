@@ -32,7 +32,7 @@ urlpatterns = [
     url(r"^activate$", views.activate, name="activate"),
     url(r"^about$", TemplateView.as_view(template_name="about.html")),
     url(r"^artist/([0-9a-f\-]+)$", views.artist, name="artist"),
-    url(r"^artists$", views.artists),
+    url(r"^artists$", views.artists, name="artists"),
     url(r"^artists-add$", views.artists_add),
     url(r"^artists-remove$", views.artists_remove),
     url(r"^blog$", RedirectView.as_view(url="http://kojevnikov.com/tag/muspy.html")),
@@ -53,6 +53,11 @@ urlpatterns = [
         r"^signin$", LoginView.as_view(authentication_form=SignInForm, template_name="signin.html")
     ),
     url(r"^signout$", views.signout),
+    path(
+        "signup-complete",
+        TemplateView.as_view(template_name="signup_complete.html"),
+        name="signup-complete",
+    ),
     url(r"^signup$", views.signup),
     url(r"^sitemap.xml$", views.sitemap),
     url(r"^star$", views.star),

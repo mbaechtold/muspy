@@ -21,7 +21,6 @@ from datetime import date
 from datetime import timedelta
 from urllib.parse import urlsplit
 
-from django.conf import settings as django_settings
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -550,7 +549,7 @@ def signup(request):
         )
         user.profile.send_activation_email(request)
         login(request, user)
-        return redirect(django_settings.LOGIN_REDIRECT_URL)
+        return redirect(reverse("signup-complete"))
 
     return render(request, "signup.html", {"form": form})
 
