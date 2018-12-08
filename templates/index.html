@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block before_main_section %}
-  <section class="hero  is-primary">
+  <section class="hero is-primary">
     <div class="hero-body">
       <div class="container">
         <h1 class="title">
@@ -44,61 +44,83 @@
     <span class="marker">subscribe to the {% if user.is_authenticated %}<a href="/feed?id={{ user.username }}">{% endif %}rss feed{% if user.is_authenticated %}</a>{% endif %}</span>
     and receive release alerts using the feed aggregator of your choice.</p>
 
-  {% if not request.user.is_authenticated %}
-    <h2>Ready? Sign in to follow your favorite artists!</h2>
-    <form method="post" action="/signin">
-      {% csrf_token %}
-
-      <div class="field">
-        <label class="label" for="{{ signin_form.email.id_for_label }}">{{ signin_form.username.label }}</label>
-        <p class="help">{{ signin_form.username.help_text }}</p>
-        <div class="control has-icons-left has-icons-right">
-          {{ signin_form.username }}
-          <span class="icon is-small is-left">
-              <i class="fas fa-envelope"></i>
-            </span>
-          {% if signin_form.username.errors %}
-            <span class="icon is-small is-right">
-                <i class="fas fa-exclamation-triangle"></i>
-              </span>
-          {% endif %}
-        </div>
-        {% if signin_form.username.errors %}
-          <p class="help is-danger">
-            {% for error in signin_form.username.errors %}
-              {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}
-            {% endfor %}
-          </p>
-        {% endif %}
-      </div>
-
-      <div class="field">
-        <label class="label" for="{{ signin_form.password.id_for_label }}">{{ signin_form.password.label }}</label>
-        <p class="help">{{ signin_form.password.help_text }}</p>
-        <div class="control has-icons-left has-icons-right">
-          {{ signin_form.password }}
-          <span class="icon is-small is-left">
-                <i class="fas fa-key"></i>
-              </span>
-          {% if signin_form.password.errors %}
-            <span class="icon is-small is-right">
-                  <i class="fas fa-exclamation-triangle"></i>
-                </span>
-          {% endif %}
-        </div>
-        {% if signin_form.password.errors %}
-          <p class="help is-danger">
-            {% for error in signin_form.password.errors %}
-              {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}
-            {% endfor %}
-          </p>
-        {% endif %}
-      </div>
-      <input type="submit" class="button" value="Sign in"/>
-      <input type="hidden" name="next" value="{{ next }}"/>
-    </form>
-    <p>Forgot your password? <a href="/reset">Reset it</a>.</p>
-    <p>Don't have an account? <a href="/signup">Create one</a>.</p>
-  {% endif %}
+{#  {% if not request.user.is_authenticated %}#}
+{#    <h2>Ready? Sign in to follow your favorite artists!</h2>#}
+{#    <form method="post" action="/signin">#}
+{#      {% csrf_token %}#}
+{##}
+{#      <div class="field">#}
+{#        <label class="label" for="{{ signin_form.email.id_for_label }}">{{ signin_form.username.label }}</label>#}
+{#        <p class="help">{{ signin_form.username.help_text }}</p>#}
+{#        <div class="control has-icons-left has-icons-right">#}
+{#          {{ signin_form.username }}#}
+{#          <span class="icon is-small is-left">#}
+{#              <i class="fas fa-envelope"></i>#}
+{#            </span>#}
+{#          {% if signin_form.username.errors %}#}
+{#            <span class="icon is-small is-right">#}
+{#                <i class="fas fa-exclamation-triangle"></i>#}
+{#              </span>#}
+{#          {% endif %}#}
+{#        </div>#}
+{#        {% if signin_form.username.errors %}#}
+{#          <p class="help is-danger">#}
+{#            {% for error in signin_form.username.errors %}#}
+{#              {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}#}
+{#            {% endfor %}#}
+{#          </p>#}
+{#        {% endif %}#}
+{#      </div>#}
+{##}
+{#      <div class="field">#}
+{#        <label class="label" for="{{ signin_form.password.id_for_label }}">{{ signin_form.password.label }}</label>#}
+{#        <p class="help">{{ signin_form.password.help_text }}</p>#}
+{#        <div class="control has-icons-left has-icons-right">#}
+{#          {{ signin_form.password }}#}
+{#          <span class="icon is-small is-left">#}
+{#                <i class="fas fa-key"></i>#}
+{#              </span>#}
+{#          {% if signin_form.password.errors %}#}
+{#            <span class="icon is-small is-right">#}
+{#                  <i class="fas fa-exclamation-triangle"></i>#}
+{#                </span>#}
+{#          {% endif %}#}
+{#        </div>#}
+{#        {% if signin_form.password.errors %}#}
+{#          <p class="help is-danger">#}
+{#            {% for error in signin_form.password.errors %}#}
+{#              {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}#}
+{#            {% endfor %}#}
+{#          </p>#}
+{#        {% endif %}#}
+{#      </div>#}
+{#      <input type="submit" class="button" value="Sign in"/>#}
+{#      <input type="hidden" name="next" value="{{ next }}"/>#}
+{#    </form>#}
+{#    <p>Forgot your password? <a href="/reset">Reset it</a>.</p>#}
+{#    <p>Don't have an account? <a href="/signup">Create one</a>.</p>#}
+{#  {% endif %}#}
 
 {% endblock content %}
+
+
+{% block after_main_section %}
+  <section class="hero is-white">
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns">
+          <div class="column">
+            <h1 class="title">Already a member?</h1>
+            <h2 class="subtitle">Welcome back, nice to see you again!</h2>
+            <p><a class="button is-dark">Sign in</a></p>
+          </div>
+          <div class="column">
+            <h1 class="title">No?</h1>
+            <h2 class="subtitle">Signing up is easy and free. Join now!</h2>
+            <p><a class="button is-light">Sign up</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

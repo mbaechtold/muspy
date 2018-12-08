@@ -199,7 +199,7 @@ class Base(Configuration):
         "DEFAULT": {
             "CACHE": not DEBUG,
             "BUNDLE_DIR_NAME": "/",
-            "STATS_FILE": os.path.join(BASE_DIR, "webpack-stats.json"),
+            "STATS_FILE": os.path.join(BASE_DIR, "tmp/webpack-stats.json"),
             "POLL_INTERVAL": 0.1,
             "TIMEOUT": None,
             "IGNORE": [".*\.hot-update.js", ".+\.map"],
@@ -290,6 +290,8 @@ class Production(SentryMixin, CeleryMixin, Base):
         "www.muspy.one.baechtold.me",
         "muspy.com",
         "www.muspy.com",
+        "localhost",
+        "localhost:8000",
     ]
 
     @property
@@ -329,13 +331,14 @@ class Production(SentryMixin, CeleryMixin, Base):
         # fmt: on
         return logging
 
-    WEBPACK_LOADER = {
-        "DEFAULT": {
-            "CACHE": not DEBUG,
-            "BUNDLE_DIR_NAME": "/",
-            "STATS_FILE": "/app/webpack-stats.json",
-            "POLL_INTERVAL": 0.1,
-            "TIMEOUT": None,
-            "IGNORE": [".*\.hot-update.js", ".+\.map"],
+    @property
+    def WEBPACK_LOADER(self):
+        return {
+            "DEFAULT": {
+                "CACHE": True,
+                "BUNDLE_DIR_NAME": "muspy/js/",
+                "STATS_FILE": os.path.join(self.BASE_DIR, "tmp/webpack-stats-production.json"),
+                "TIMEOUT": None,
+                "IGNORE": [".*\.hot-update.js", ".+\.map"],
+            }
         }
-    }

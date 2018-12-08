@@ -11,7 +11,7 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin('css/muspy.css'),
-    new BundleTracker({filename: './webpack-stats.json'})
+    new BundleTracker({filename: './tmp/webpack-stats.json'})
   ],
   module: {
     rules: [{

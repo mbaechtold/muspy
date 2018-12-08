@@ -1,5 +1,6 @@
 require('./muspy.scss');
 
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // Get all "navbar-burger" elements

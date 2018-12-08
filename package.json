@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build": "webpack --mode production",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "postinstall": "webpack -p --config webpack.production.config.js"
   },
   "engines": {
     "node": ">= 6.0.0",
