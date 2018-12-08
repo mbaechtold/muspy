@@ -3,22 +3,70 @@
 {% block header %}Sign in{% endblock %}
 {% block content %}
 
-<form method="post" action="/signin">
-{% csrf_token %}
+  {% if form.non_field_errors %}
+    <article class="message is-danger">
+      <div class="message-body">
+        {% for error in form.non_field_errors %}
+          {{ error }}{% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+      </div>
+    </article>
+  {% endif %}
 
-<table id="signin">
-{{ form.as_table }}
-<tr>
-    <th>&nbsp;</th>
-    <td><input type="submit" value="Sign in" /></td>
-</tr>
-</table>
+  <form method="post" action="/signin">
+    {% csrf_token %}
 
-<input type="hidden" name="next" value="{{ next }}" />
-</form>
+    <div class="field">
+      <label class="label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+      <p class="help">{{ form.username.help_text }}</p>
+      <div class="control has-icons-left has-icons-right">
+        {{ form.username }}
+        <span class="icon is-small is-left">
+          <i class="fas fa-envelope"></i>
+        </span>
+        {% if form.username.errors %}
+          <span class="icon is-small is-right">
+            <i class="fas fa-exclamation-triangle"></i>
+          </span>
+        {% endif %}
+      </div>
+      {% if form.username.errors %}
+        <p class="help is-danger">
+          {% for error in form.username.errors %}
+            {{ error|escape }}{% if not forloop.last %}<br />{% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+    </div>
 
-<p>Forgot your password? <a href="/reset">Reset it</a>.</p>
-<p>Don't have an account? <a href="/signup">Create one</a>.</p>
+    <div class="field">
+      <label class="label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+      <p class="help">{{ form.password.help_text }}</p>
+      <div class="control has-icons-left has-icons-right">
+        {{ form.password }}
+        <span class="icon is-small is-left">
+          <i class="fas fa-key"></i>
+        </span>
+        {% if form.password.errors %}
+          <span class="icon is-small is-right">
+            <i class="fas fa-exclamation-triangle"></i>
+          </span>
+        {% endif %}
+      </div>
+      {% if form.password.errors %}
+        <p class="help is-danger">
+          {% for error in form.password.errors %}
+            {{ error|escape }}{% if not forloop.last %}<br />{% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+    </div>
+    <input type="submit" class="button" value="Sign in"/>
+    <input type="hidden" name="next" value="{{ next }}"/>
+  </form>
+
+  <p>Forgot your password? <a href="/reset">Reset it</a>.</p>
+  <p>Don't have an account? <a href="/signup">Create one</a>.</p>
 
 {% endblock content %}
 

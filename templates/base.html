@@ -1,97 +1,80 @@
-{% load static %}<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+{% load static %}{% load render_bundle from webpack_loader %}<!DOCTYPE html>
+<html lang="en">
 <head>
   <title>{% if is_index %}muspy &ndash; Get Notified on New Album Release Dates{% else %}{% block title %}{% endblock %} &ndash; muspy{% endif %}</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <meta http-equiv="Content-Style-Type" content="text/css"/>
-  <link rel="stylesheet" href="{% static 'style.css' %}"/>
+  {% render_bundle "main" "css" %}
   <link rel="alternate" href="http://kojevnikov.com/muspy.xml" type="application/atom+xml" title="[muspy] Blog"/>
   {% if user.is_authenticated %}
     <link rel="alternate" href="/feed?id={{ user.username }}" type="application/atom+xml" title="[muspy] New Releases"/>{% endif %}
   {% block javascript %}{% endblock %}
 </head>
 <body>
-<div id="container">
-  <div id="header">
-    <div id="logo">
-      <a href="/"><img src="{% static 'logo.gif' %}" alt="muspy logo"/></a>
-    </div>
-    <div id="menu">
-      <div id="menu_top">
-        {% if user.is_authenticated %}
-          <a href="/artists">Artists</a>
-          &bull; <a href="/releases">Releases</a>
-          &bull; <a href="/import">Import from Last.fm</a>
-        {% else %}
-          <div class="share">
-            <div class="facebook">
-              <iframe
-                  src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fmuspy.com&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21"
-                  scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe>
-            </div>
-            <div class="google">
-              <div class="g-plusone" data-size="medium" data-href="{{ request.build_absolute_uri }}"></div>
-              <script type="text/javascript">
-                window.___gcfg = {lang: 'en-GB'};
+  {% include "_navbar.html" %}
 
-                (function() {
-                  var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-                  po.src = 'https://apis.google.com/js/plusone.js';
-                  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-                })();
-              </script>
+  {% block before_main_section %}{% endblock %}
+  <section class="section">
+    <div class="container">
+      {% block email_confirmation %}
+        {% if user.is_authenticated and not user.profile.email_activated and user.profile.notify %}
+          <article class="message is-info">
+            <div class="message-body">
+              Please activate your email address. <a href="/activate">What's this about?</a>
             </div>
-            <div class="twitter">
-              <a href="https://twitter.com/share" class="twitter-share-button" data-url="{{ request.build_absolute_uri }}" data-text="get notified when your favorite artists release new albums" data-via="muspy">Tweet</a>
-              <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-            </div>
-          </div>
+          </article>
         {% endif %}
-      </div>
-      <div id="menu_bottom_right">
-        {% if user.is_authenticated %}
-          <a href="/settings">Settings</a>
-          &bull; <a href="/signout">Sign out</a>
-        {% else %}
-          <a href="/signin">Sign in</a>
-          &bull; <a href="/signup">Sign up</a>
-        {% endif %}
-      </div>
-      <div>&nbsp;</div>
+      {% endblock %}
+      {% if messages %}
+        {% for message in messages %}
+          <article class="message {{ message.tags }}">
+            <div class="message-body">{{ message }}</div>
+          </article>
+        {% endfor %}
+      {% endif %}
+      {% if not is_index %}
+        <h1 class="title">{% block header %}{% endblock %}</h1>
+      {% endif %}
+      {% spaceless %}
+        <div class="content">{% block content %}{% endblock %}</div>
+      {% endspaceless %}
     </div>
-  </div>
-  {% block email_confirmation %}
-    {% if user.is_authenticated and not user.profile.email_activated and user.profile.notify %}
-      <div class="message info">
-        <p>Please activate your email address. <a href="/activate">What's this about?</a>
-      </div>
-    {% endif %}
-  {% endblock %}
-  {% if messages %}
-    {% for message in messages %}
-      <div class="message {{ message.tags }}">
-        <p>{{ message }}</p>
-      </div>
-    {% endfor %}
+  </section>
+  {% block below_main_section %}{% endblock %}
+  <footer class="footer">
+    <div class="content has-text-centered">
+      <p>
+        <a href="/about">About</a>
+        &bull; <a href="/faq">FAQ</a>
+        &bull; <a href="/contact">Contact</a>
+        &bull; <a href="https://github.com/alexkay/muspy/tree/master/api">API</a>
+        &bull; <a href="https://github.com/alexkay/muspy">Code</a>
+        &bull; <a href="http://kojevnikov.com/muspy.xml"><img src="{% static 'feed.png' %}" alt="RSS" title="Subscribe in a reader"/></a>
+        <a href="http://kojevnikov.com/tag/muspy.html">Blog</a>
+      </p>
+    </div>
+  </footer>
+  {% render_bundle "main" "js" %}
+  {% if not user.is_authenticated %}
+    <script type="text/javascript">
+      window.___gcfg = {lang: 'en-GB'};
+      (function () {
+        var po = document.createElement('script');
+        po.type = 'text/javascript';
+        po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(po, s);
+      })();
+    </script>
+    <script>!function (d, s, id) {
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (!d.getElementById(id)) {
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//platform.twitter.com/widgets.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }
+    }(document, "script", "twitter-wjs");</script>
   {% endif %}
-  <div id="content">
-    {% if not is_index %}
-      <h1>{% block header %}{% endblock %}</h1>
-    {% endif %}
-    {% spaceless %}
-      {% block content %}{% endblock %}
-    {% endspaceless %}
-  </div>
-  <div id="footer">
-      <a href="/about">About</a>
-      &bull; <a href="/faq">FAQ</a>
-      &bull; <a href="/contact">Contact</a>
-      &bull; <a href="https://github.com/alexkay/muspy/tree/master/api">API</a>
-      &bull; <a href="https://github.com/alexkay/muspy">Code</a>
-      &bull; <a href="http://kojevnikov.com/muspy.xml"><img src="{% static 'feed.png' %}" alt="RSS" title="Subscribe in a reader"/></a>
-      <a href="http://kojevnikov.com/tag/muspy.html">Blog</a>
-  </div>
-</div>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 </body>
 </html>

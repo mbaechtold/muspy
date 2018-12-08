@@ -4,61 +4,138 @@
 {% block header %}Settings{% endblock %}
 {% block content %}
 
-<form method="post" action="/settings">
-{% csrf_token %}
-<table id="settings">
-<tr><td colspan="2"><h2>Edit email address</h2></td></tr>
-<tr>
-<th>{{ form.email.label_tag}}:</th>
-<td>{{ form.email.errors }}{{ form.email }}</td>
-</tr>
-<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+  {% if form.non_field_errors %}
+    <article class="message is-danger">
+      <div class="message-body">
+        {% for error in form.non_field_errors %}
+          {{ error }}{% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+      </div>
+    </article>
+  {% endif %}
 
-<tr><td colspan="2"><h2>Edit password</h2></td></tr>
-<tr>
-<th>{{ form.new_password.label_tag}}:</th>
-<td>{{ form.new_password.errors }}{{ form.new_password }}</td>
-</tr>
-<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+  <form method="post" action="/settings">
+    {% csrf_token %}
 
-<tr><td colspan="2"><h2>Notifications</h2></td></tr>
-<tr>
-<td colspan="2"><p>{{ form.notify }}{{ form.notify.label_tag }}</p></td>
-</tr>
-<tr><td colspan="2"><p>Alternatively, you can subscribe to the <a href="/feed?id={{ user.username }}"><img src="{% static 'feed.png' %}" alt="RSS" /> web feed</a>.</p></td></td>
-<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+    <div class="field">
+      <label class="label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+      <p class="help">{{ form.email.help_text }}</p>
+      <div class="control has-icons-left has-icons-right">
+        {{ form.email }}
+        <span class="icon is-small is-left">
+          <i class="fas fa-envelope"></i>
+        </span>
+        {% if form.email.errors %}
+          <span class="icon is-small is-right">
+            <i class="fas fa-exclamation-triangle"></i>
+          </span>
+        {% endif %}
+      </div>
+      {% if form.email.errors %}
+        <p class="help is-danger">
+          {% for error in form.email.errors %}
+            {{ error|escape }}{% if not forloop.last %}<br />{% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+    </div>
 
-<tr><td colspan="2"><h2>Filter</h2></td></tr>
-<tr>
-<td colspan="2">
-<p>Track only these release types:</p>
-<p>
-&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_album }}{{ form.notify_album.label_tag }}<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_single }}{{ form.notify_single.label_tag }}<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_ep }}{{ form.notify_ep.label_tag }}<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_live }}{{ form.notify_live.label_tag }}<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_compilation }}{{ form.notify_compilation.label_tag }}<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_remix }}{{ form.notify_remix.label_tag }}<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_other }}{{ form.notify_other.label_tag }}
-</p>
-</td>
-</tr>
-<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+    <div class="field">
+      <label class="label" for="{{ form.new_password.id_for_label }}">{{ form.new_password.label }}</label>
+      <div class="control has-icons-left has-icons-right">
+        {{ form.new_password }}
+        <span class="icon is-small is-left">
+          <i class="fas fa-key"></i>
+        </span>
+        {% if form.new_password.errors %}
+          <span class="icon is-small is-right">
+            <i class="fas fa-exclamation-triangle"></i>
+          </span>
+        {% endif %}
+      </div>
+      {% if form.new_password.errors %}
+        <p class="help is-danger">
+          {% for error in form.new_password.errors %}
+            {{ error|escape }}{% if not forloop.last %}<br />{% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+    </div>
 
-<tr>
-<td colspan="2"><input type="submit" value="Update" /></td>
-</tr>
-</table>
-</form>
+    <div class="field">
+      <label class="label">Notifications</label>
+      <div class="control">
+        <label class="checkbox">
+          {{ form.notify }}
+          {{ form.notify.label }}
+        </label>
+      </div>
+    </div>
 
-<p>&nbsp;</p>
-<h2>Delete account</h2>
-<form method="post" action="/delete">
-{% csrf_token %}
-<p>Click here to delete your muspy account and everything that goes with it.</p>
-<input type="submit" value="Delete account"/>
-</form>
+    <div class="field">
+      <label class="label">Track only these release types:</label>
+      <div class="control">
+        <label class="checkbox">
+          {{ form.notify_album }}
+          {{ form.notify_album.label }}
+        </label>
+      </div>
+      <div class="control">
+        <label class="checkbox">
+          {{ form.notify_single }}
+          {{ form.notify_single.label }}
+        </label>
+      </div>
+      <div class="control">
+        <label class="checkbox">
+         {{ form.notify_ep }}
+          {{ form.notify_ep.label }}
+        </label>
+      </div>
+      <div class="control">
+        <label class="checkbox">
+          {{ form.notify_live }}
+          {{ form.notify_live.label }}
+        </label>
+      </div>
+      <div class="control">
+        <label class="checkbox">
+          {{ form.notify_compilation }}
+          {{ form.notify_compilation.label }}
+        </label>
+      </div>
+      <div class="control">
+        <label class="checkbox">
+          {{ form.notify_remix }}
+          {{ form.notify_remix.label }}
+        </label>
+      </div>
+      <div class="control">
+        <label class="checkbox">
+          {{ form.notify_other }}
+          {{ form.notify_other.label }}
+        </label>
+      </div>
+    </div>
 
+    <input type="submit" value="Update settings" class="button"/>
+
+  </form>
 {% endblock content %}
+
+{% block below_main_section %}
+  <section class="hero is-danger">
+    <div class="hero-body">
+      <div class="container content">
+        <h2>Delete account</h2>
+        <form method="post" action="/delete">
+          {% csrf_token %}
+          <p>Click here to delete your muspy account and everything that goes with it.</p>
+          <input type="submit" value="Delete account" class="button"/>
+        </form>
+      </div>
+    </div>
+  </section>
+{% endblock %}
 
 <script type="text/javascript">document.getElementById("id_email").focus();</script>

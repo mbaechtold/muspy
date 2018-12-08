@@ -3,20 +3,68 @@
 {% block header %}Sign up{% endblock %}
 {% block content %}
 
-<form method="post" action="/signup">
-{% csrf_token %}
+  {% if form.non_field_errors %}
+    <article class="message is-danger">
+      <div class="message-body">
+        {% for error in form.non_field_errors %}
+          {{ error }}{% if not forloop.last %}<br>{% endif %}
+        {% endfor %}
+      </div>
+    </article>
+  {% endif %}
 
-<table id="signup">
-{{ form.as_table }}
-<tr>
-    <th>&nbsp;</th>
-    <td><input type="submit" value="Sign up" /></td>
-</tr>
-</table>
+  <form method="post" action="/signup">
+    {% csrf_token %}
 
-</form>
+    <div class="field">
+      <label class="label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+      <p class="help">{{ form.email.help_text }}</p>
+      <div class="control has-icons-left has-icons-right">
+        {{ form.email }}
+        <span class="icon is-small is-left">
+          <i class="fas fa-envelope"></i>
+        </span>
+        {% if form.email.errors %}
+          <span class="icon is-small is-right">
+            <i class="fas fa-exclamation-triangle"></i>
+          </span>
+        {% endif %}
+      </div>
+      {% if form.email.errors %}
+        <p class="help is-danger">
+          {% for error in form.email.errors %}
+            {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+    </div>
 
-<p>Already a member? <a href="/signin">Sign in here</a>.</p>
+    <div class="field">
+      <label class="label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+      <p class="help">{{ form.password.help_text }}</p>
+      <div class="control has-icons-left has-icons-right">
+        {{ form.password }}
+        <span class="icon is-small is-left">
+          <i class="fas fa-key"></i>
+        </span>
+        {% if form.password.errors %}
+          <span class="icon is-small is-right">
+            <i class="fas fa-exclamation-triangle"></i>
+          </span>
+        {% endif %}
+      </div>
+      {% if form.password.errors %}
+        <p class="help is-danger">
+          {% for error in form.password.errors %}
+            {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+    </div>
+    <input type="submit" class="button" value="Sign up"/>
+  </form>
+
+  <p>Already a member? <a href="/signin">Sign in here</a>.</p>
 
 {% endblock content %}
 

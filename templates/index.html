@@ -1,47 +1,100 @@
 {% extends "base.html" %}
+
+{% block before_main_section %}
+  <section class="hero  is-primary">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Welcome to muspy
+        </h1>
+        <h2 class="subtitle">
+          The easiest way to follow your favourite artists!
+        </h2>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
 {% block content %}
-
-<p>Welcome to muspy &ndash; <span class="marker">the easiest way to follow your favourite artists!</span></p>
-
-<h2>What?</h2>
-<p><span class="marker">muspy will notify you when
-{% if user.is_authenticated %}<a href="/artists">{% endif %}artists you like{% if user.is_authenticated %}</a>{% endif %}
-release
-{% if user.is_authenticated %}<a href="/releases">{% endif %}new albums{% if user.is_authenticated %}</a>{% endif %}</span>.</p>
-<h2>Why?</h2>
-<p>Have you ever missed an album of one of your favourite artists only to
- discover it by accident weeks after the release? Do you spend a lot of time on
- official websites looking for release announcements? <span class="marker">With
+  <h2>What?</h2>
+  <p><span class="marker">muspy will notify you when
+    {% if user.is_authenticated %}<a href="/artists">{% endif %}artists you like{% if user.is_authenticated %}</a>{% endif %}
+    release
+    {% if user.is_authenticated %}<a href="/releases">{% endif %}new albums{% if user.is_authenticated %}</a>{% endif %}</span>.</p>
+  <h2>Why?</h2>
+  <p>Have you ever missed an album of one of your favourite artists only to
+    discover it by accident weeks after the release? Do you spend a lot of time on
+    official websites looking for release announcements? <span class="marker">With
  muspy you will save time and won't miss any releases</span>!</p>
-<h2>How?</h2>
-{% if not user.is_authenticated %}
-<p>You need to <a href="/signup">create an account</a> to use muspy.
-Come on, don't be lazy! <span class="marker">It's free and only
+  <h2>How?</h2>
+  {% if not user.is_authenticated %}
+    <p>You need to <a href="/signup">create an account</a> to use muspy.
+      Come on, don't be lazy! <span class="marker">It's free and only
 <a href="/signup">takes a minute</a>!</span> If you already have an account,
-<a href="/signin">click here</a> to sign in.</p>
-{% endif %}
-<p>After you sign in, you may
-{% if user.is_authenticated %}<a href="/artists">{% endif %}add the artists{% if user.is_authenticated %}</a>{% endif %}
-you want to follow. You can add them one-by-one, copy the list of artists from your Facebook profile, or import the top bands from your Last.fm profile.</p>
-<p>When one of the artists releases a new CD,
-<span class="marker">you will receive a short email notification</span>
-with the album name and the release date. You can also see the
-{% if user.is_authenticated %}<a href="/releases">{% endif %}new releases{% if user.is_authenticated %}</a>{% endif %}
-on the website sorted in the chronological order, or
-<span class="marker">subscribe to the {% if user.is_authenticated %}<a href="/feed?id={{ user.username }}">{% endif %}rss feed{% if user.is_authenticated %}</a>{% endif %}</span>
-and receive release alerts using the feed aggregator of your choice.</p>
+      <a href="/signin">click here</a> to sign in.</p>
+  {% endif %}
+  <p>After you sign in, you may
+    {% if user.is_authenticated %}<a href="/artists">{% endif %}add the artists{% if user.is_authenticated %}</a>{% endif %}
+    you want to follow. You can add them one-by-one, copy the list of artists from your Facebook profile, or import the top bands from your Last.fm profile.</p>
+  <p>When one of the artists releases a new CD,
+    <span class="marker">you will receive a short email notification</span>
+    with the album name and the release date. You can also see the
+    {% if user.is_authenticated %}<a href="/releases">{% endif %}new releases{% if user.is_authenticated %}</a>{% endif %}
+    on the website sorted in the chronological order, or
+    <span class="marker">subscribe to the {% if user.is_authenticated %}<a href="/feed?id={{ user.username }}">{% endif %}rss feed{% if user.is_authenticated %}</a>{% endif %}</span>
+    and receive release alerts using the feed aggregator of your choice.</p>
 
   {% if not request.user.is_authenticated %}
     <h2>Ready? Sign in to follow your favorite artists!</h2>
     <form method="post" action="/signin">
       {% csrf_token %}
-      <table id="signin">
-        {{ signin_form.as_table }}
-        <tr>
-          <th>&nbsp;</th>
-          <td><input type="submit" value="Sign in"/></td>
-        </tr>
-      </table>
+
+      <div class="field">
+        <label class="label" for="{{ signin_form.email.id_for_label }}">{{ signin_form.username.label }}</label>
+        <p class="help">{{ signin_form.username.help_text }}</p>
+        <div class="control has-icons-left has-icons-right">
+          {{ signin_form.username }}
+          <span class="icon is-small is-left">
+              <i class="fas fa-envelope"></i>
+            </span>
+          {% if signin_form.username.errors %}
+            <span class="icon is-small is-right">
+                <i class="fas fa-exclamation-triangle"></i>
+              </span>
+          {% endif %}
+        </div>
+        {% if signin_form.username.errors %}
+          <p class="help is-danger">
+            {% for error in signin_form.username.errors %}
+              {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}
+            {% endfor %}
+          </p>
+        {% endif %}
+      </div>
+
+      <div class="field">
+        <label class="label" for="{{ signin_form.password.id_for_label }}">{{ signin_form.password.label }}</label>
+        <p class="help">{{ signin_form.password.help_text }}</p>
+        <div class="control has-icons-left has-icons-right">
+          {{ signin_form.password }}
+          <span class="icon is-small is-left">
+                <i class="fas fa-key"></i>
+              </span>
+          {% if signin_form.password.errors %}
+            <span class="icon is-small is-right">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </span>
+          {% endif %}
+        </div>
+        {% if signin_form.password.errors %}
+          <p class="help is-danger">
+            {% for error in signin_form.password.errors %}
+              {{ error|escape }}{% if not forloop.last %}<br/>{% endif %}
+            {% endfor %}
+          </p>
+        {% endif %}
+      </div>
+      <input type="submit" class="button" value="Sign in"/>
       <input type="hidden" name="next" value="{{ next }}"/>
     </form>
     <p>Forgot your password? <a href="/reset">Reset it</a>.</p>

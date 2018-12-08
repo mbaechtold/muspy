@@ -12,15 +12,41 @@
 <p>Forgot your password? Enter below your login email.
 We will send you an email with a link to reset your password.</p>
 
+{% if form.non_field_errors %}
+  <article class="message is-danger">
+    <div class="message-body">
+      {% for error in form.non_field_errors %}
+        {{ error }}{% if not forloop.last %}<br>{% endif %}
+      {% endfor %}
+    </div>
+  </article>
+{% endif %}
+
 <form method="post" action="/reset">
-{% csrf_token %}
-<table id="reset">
-{{ form.as_table }}
-<tr>
-    <th>&nbsp;</th>
-    <td><input type="submit" value="Reset password" /></td>
-</tr>
-</table>
+  {% csrf_token %}
+  <div class="field">
+    <label class="label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+    <p class="help">{{ form.email.help_text }}</p>
+    <div class="control has-icons-left has-icons-right">
+      {{ form.email }}
+      <span class="icon is-small is-left">
+        <i class="fas fa-envelope"></i>
+      </span>
+      {% if form.email.errors %}
+        <span class="icon is-small is-right">
+          <i class="fas fa-exclamation-triangle"></i>
+        </span>
+      {% endif %}
+    </div>
+    {% if form.email.errors %}
+      <p class="help is-danger">
+        {% for error in form.email.errors %}
+          {{ error|escape }}{% if not forloop.last %}<br />{% endif %}
+        {% endfor %}
+      </p>
+    {% endif %}
+  </div>
+  <input type="submit" class="button" value="Reset password"/>
 </form>
 
 {% endif %}

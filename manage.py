@@ -2,7 +2,6 @@
 import os
 import sys
 
-import envdir
 
 if __name__ == "__main__":
 
@@ -10,6 +9,8 @@ if __name__ == "__main__":
     current_folder = os.path.dirname(os.path.abspath(__file__))
     envdir_folder = os.path.join(current_folder, ".env_vars")
     if os.path.exists(envdir_folder):
+        import envdir
+
         envdir.open(envdir_folder)
 
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")

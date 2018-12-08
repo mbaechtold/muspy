@@ -22,7 +22,11 @@ from app.models import *
 
 
 class ResetForm(forms.Form):
-    email = forms.EmailField(label="Email", required=True)
+    email = forms.EmailField(
+        label="Email",
+        required=True,
+        widget=forms.EmailInput(attrs={"class": "input", "placeholder": "Your email address"}),
+    )
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower().strip()
@@ -32,21 +36,22 @@ class ResetForm(forms.Form):
 
 
 class SettingsForm(forms.Form):
-
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
 
-    email = forms.EmailField(label="New email")
+    email = forms.EmailField(
+        label="Email address",
+        widget=forms.EmailInput(attrs={"class": "input", "placeholder": "Your email address"}),
+        help_text="We will send you notifications about new releases to this address",
+    )
     new_password = forms.CharField(
-        label="New password",
+        label="Password",
         max_length=100,
         required=False,
-        widget=forms.PasswordInput(render_value=False),
+        widget=forms.PasswordInput(render_value=True, attrs={"class": "input"}),
     )
-    notify = forms.BooleanField(
-        label="Receive new release notifications " "by email.", required=False
-    )
+    notify = forms.BooleanField(label="Receive new release notifications by email.", required=False)
     notify_album = forms.BooleanField(label="Album", required=False)
     notify_single = forms.BooleanField(label="Single", required=False)
     notify_ep = forms.BooleanField(label="EP", required=False)
@@ -102,14 +107,28 @@ class SettingsForm(forms.Form):
 
 
 class SignInForm(AuthenticationForm):
-
-    username = forms.CharField(label="Email", max_length=75)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].label = "Email"
+        self.fields["username"].widget = forms.EmailInput(
+            attrs={"class": "input", "placeholder": "Your email address"}
+        )
+        self.fields["password"].widget.attrs = {"class": "input", "placeholder": "Your password"}
 
 
 class SignUpForm(forms.Form):
 
-    email = forms.EmailField(widget=forms.TextInput(attrs={"maxlength": 75}), label="Email")
-    password = forms.CharField(widget=forms.PasswordInput(render_value=False), label="Password")
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={"class": "input", "placeholder": "Your email address"}),
+        label="Email",
+        max_length=75,
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            render_value=False, attrs={"class": "input", "placeholder": "Your password"}
+        ),
+        label="Password",
+    )
 
     def clean_email(self):
         email = self.cleaned_data["email"].lower().strip()
