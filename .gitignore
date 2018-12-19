@@ -5,3 +5,4 @@ db/muspy.db*
 .env_vars/
 env
 .coverage
+node_modules

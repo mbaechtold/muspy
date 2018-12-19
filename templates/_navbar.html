@@ -1,0 +1,63 @@
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <strong>Muspy</strong>
+      </a>
+      <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navBarMain">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="navBarMain" class="navbar-menu">
+      <div class="navbar-start">
+        {% if user.is_authenticated %}
+          <a class="navbar-item" href="/artists">Artists</a>
+          <a class="navbar-item" href="/releases">Releases</a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">Import</a>
+            <div class="navbar-dropdown">
+              <a class="navbar-item" href="/import">From Last.fm</a>
+            </div>
+          </div>
+        {% else %}
+          <span class="navbar-item">
+            <iframe
+                src="//www.facebook.com/plugins/like.php?href=https%3A%2F%2Fmuspy.com&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21"
+                scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:80px; height:21px;" allowTransparency="true">
+            </iframe>
+          </span>
+          <span class="navbar-item">
+            <div class="g-plusone" data-size="medium" data-href="{{ request.build_absolute_uri }}"></div>
+          </span>
+          <span class="navbar-item">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-url="{{ request.build_absolute_uri }}"
+               data-text="get notified when your favorite artists release new albums" data-via="muspy">
+              Tweet</a>
+          </span>
+        {% endif %}
+      </div>
+      <div class="navbar-end">
+          {% if user.is_authenticated %}
+            <div class="navbar-item has-dropdown is-hoverable">
+              <a class="navbar-link">{{ request.user.email }}</a>
+              <div class="navbar-dropdown">
+                <a class="navbar-item" href="/settings">Settings</a>
+                <a class="navbar-item" href="/signout">Sign out</a>
+              </div>
+            </div>
+          {% else %}
+            <div class="navbar-item">
+              <div class="buttons">
+                <a class="button is-dark" href="/signin">Sign in</a>
+                <a class="button is-light" href="/signup">Sign up</a>
+              </div>
+            </div>
+          {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

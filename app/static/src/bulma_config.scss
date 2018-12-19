@@ -1,0 +1,37 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Roboto:400,700');
+
+// Update Bulma's global variables
+$family-sans-serif: "Roboto", sans-serif;
+$grey-dark:  #757763;
+$grey-light: #D0D1CD;
+$primary: #222222;
+$link: #CC0000;
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$body-background-color: #EFF0EB;
+$control-border-width: 2px;
+$input-shadow: none;
+
+// Import only what you need from Bulma...
+@import "~bulma/sass/utilities/_all.sass";
+@import "~bulma/sass/base/_all.sass";
+@import "~bulma/sass/elements/box.sass";
+@import "~bulma/sass/elements/button.sass";
+@import "~bulma/sass/elements/container.sass";
+@import "~bulma/sass/elements/content.sass";
+@import "~bulma/sass/elements/form.sass";
+@import "~bulma/sass/elements/icon.sass";
+@import "~bulma/sass/elements/notification.sass";
+@import "~bulma/sass/elements/title.sass";
+@import "~bulma/sass/components/message.sass";
+@import "~bulma/sass/components/navbar.sass";
+@import "~bulma/sass/grid/columns.sass";
+@import "~bulma/sass/layout/_all.sass";
+
+// ...or import everything (results in a larger css bundle).
+//@import "~bulma/bulma";

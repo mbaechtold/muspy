@@ -180,6 +180,7 @@ class Base(Configuration):
         "django.contrib.messages",
         "django.contrib.staticfiles",
         "django.contrib.sites",
+        "webpack_loader",
         "app.apps.MuspyApp",
     ]
 
@@ -193,6 +194,17 @@ class Base(Configuration):
         "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
         "django.contrib.auth.hashers.SHA1PasswordHasher",
     ]
+
+    WEBPACK_LOADER = {
+        "DEFAULT": {
+            "CACHE": not DEBUG,
+            "BUNDLE_DIR_NAME": "dist/",
+            "STATS_FILE": os.path.join(BASE_DIR, "tmp/webpack-stats.json"),
+            "POLL_INTERVAL": 0.1,
+            "TIMEOUT": None,
+            "IGNORE": [".*\.hot-update.js", ".+\.map"],
+        }
+    }
 
     # fmt: off
     LOGGING = {
@@ -278,6 +290,8 @@ class Production(SentryMixin, CeleryMixin, Base):
         "www.muspy.one.baechtold.me",
         "muspy.com",
         "www.muspy.com",
+        "localhost",
+        "localhost:8000",
     ]
 
     @property
@@ -316,3 +330,9 @@ class Production(SentryMixin, CeleryMixin, Base):
         }
         # fmt: on
         return logging
+
+    @property
+    def WEBPACK_LOADER(self):
+        config = super().WEBPACK_LOADER
+        config["DEFAULT"]["STATS_FILE"] = os.path.join(self.BASE_DIR, "tmp/webpack-stats-prod.json")
+        return config

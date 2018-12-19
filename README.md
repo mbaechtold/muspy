@@ -48,3 +48,10 @@ Start worker and beat separately (on a production server):
     celery --app=app worker --loglevel=INFO
     
     celery --app=app beat --loglevel=INFO --scheduler=django_celery_beat.schedulers:DatabaseScheduler
+
+
+## Frontend
+
+Install dependencies with `npm install`.
+
+During development, keep `npm run dev` runnning.
