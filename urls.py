@@ -19,6 +19,7 @@ import os
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth.views import LoginView
+from django.urls import include
 from django.urls import path
 from django.views.generic.base import RedirectView
 from django.views.generic.base import TemplateView
@@ -62,6 +63,7 @@ urlpatterns = [
     url(r"^sitemap.xml$", views.sitemap),
     url(r"^star$", views.star),
     url(r"^unsubscribe$", views.unsubscribe),
+    path("", include("django_safari_notifications.urls")),
     url(r"blog|\.php", views.forbidden),  # Hello, vulnerability scan bots!
 ]
 

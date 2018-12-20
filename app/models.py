@@ -454,6 +454,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
 
     notify = models.BooleanField(default=True)
+    notify_safari = models.BooleanField(default=False)
     notify_album = models.BooleanField(default=True)
     notify_single = models.BooleanField(default=True)
     notify_ep = models.BooleanField(default=True)

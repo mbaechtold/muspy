@@ -183,6 +183,7 @@ class Base(Configuration):
         "django.contrib.sites",
         "webpack_loader",
         "app.apps.MuspyApp",
+        "django_safari_notifications.apps.MuspySafariNotificationsConfig",
     ]
 
     SITE_ID = 1

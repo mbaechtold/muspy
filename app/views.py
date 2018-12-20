@@ -21,6 +21,8 @@ from datetime import date
 from datetime import timedelta
 from urllib.parse import urlsplit
 
+from apns2.client import APNsClient
+from apns2.payload import Payload
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -522,6 +524,14 @@ def settings(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Your settings have been saved.")
+
+            if form.cleaned_data["notify_safari"] is True:
+                token_hex = "b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b87"
+                payload = Payload(alert="Hello World!", sound="default", badge=1)
+                topic = "com.example.App"
+                client = APNsClient("key.pem", use_sandbox=False, use_alternative_port=False)
+                client.send_notification(token_hex, payload, topic)
+
             return redirect(request.path)
     else:
         initial = {

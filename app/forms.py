@@ -52,6 +52,9 @@ class SettingsForm(forms.Form):
         widget=forms.PasswordInput(render_value=True, attrs={"class": "input"}),
     )
     notify = forms.BooleanField(label="Receive new release notifications by email.", required=False)
+    notify_safari = forms.BooleanField(
+        label="Receive new release notifications in Safari.", required=False
+    )
     notify_album = forms.BooleanField(label="Album", required=False)
     notify_single = forms.BooleanField(label="Single", required=False)
     notify_ep = forms.BooleanField(label="EP", required=False)
@@ -80,6 +83,9 @@ class SettingsForm(forms.Form):
             self.profile.user.save()
         if self.profile.notify != self.cleaned_data["notify"]:
             self.profile.notify = self.cleaned_data["notify"]
+            changed = True
+        if self.profile.notify_safari != self.cleaned_data["notify_safari"]:
+            self.profile.notify_safari = self.cleaned_data["notify_safari"]
             changed = True
         if self.profile.notify_album != self.cleaned_data["notify_album"]:
             self.profile.notify_album = self.cleaned_data["notify_album"]
