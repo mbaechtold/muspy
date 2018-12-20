@@ -16,7 +16,7 @@
     <div class="container">
       {% block email_confirmation %}
         {% if user.is_authenticated and not user.profile.email_activated and user.profile.notify %}
-          <article class="message is-info">
+          <article class="message is-warning">
             <div class="message-body">
               Please activate your email address. <a href="/activate">What's this about?</a>
             </div>

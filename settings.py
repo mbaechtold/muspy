@@ -21,6 +21,7 @@ import dj_database_url
 import dj_email_url
 from configurations import Configuration
 from configurations import values
+from django.contrib import messages
 
 from app.lastfm import get_lastfm_network
 
@@ -263,6 +264,14 @@ class Base(Configuration):
     @property
     def LASTFM_CLIENT(self):
         return get_lastfm_network(self.BASE_DIR)
+
+    MESSAGE_TAGS = {
+        messages.DEBUG: "is-dark",
+        messages.INFO: "is-info",
+        messages.SUCCESS: "is-success",
+        messages.WARNING: "is-warning",
+        messages.ERROR: "is-danger",
+    }
 
 
 class Development(CeleryMixin, Base):
